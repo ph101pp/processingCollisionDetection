@@ -18,19 +18,19 @@ void draw(){
 	fill(0,0,255);
 	pushMatrix();
 	
-	float dx=x*10;
-	float dy=y*10;
-	float dz=z*10;
+	float dx=x*100;
+	float dy=y*100;
+	float dz=z*100;
 	
 	println(dx);
 	println(dy);
 	println(dz);
-	println("hallo");
+	println("schau");
 
 	translate(dx+450, dy+450, dz);
 	rotateY(0);
 	rotateX(0);
-	box(1);
+	box(3);
 	popMatrix();
 	
 	countUp();
@@ -39,8 +39,8 @@ void draw(){
 void countUp(){
 
 		
-    x = (-1.11 * x - y * y - z * z + 1.11 * 4.49) * 0.13;
-	y = (-y + x * y - 1.47 * x * z + 0.4) * 0.13;
-    z = (-z + 1.47 * x * y + x * z) * 0.13;
+	x += (-1.11 * x - y * y - z * z + 1.11 * 4.49) * 0.13;
+	y += (-y + x * y - 1.47 * x * z + 0.4) * 0.13;
+	z += (-z + 1.47 * x * y + x * z) * 0.13;
 	
 }
