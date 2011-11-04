@@ -48,16 +48,16 @@ void setup(){
 	
  	controlP5.addSlider("zoom",0,1000,zoom,20,240,800,10);
  	controlP5.addSlider("iteration",0,10000,iteration,20,220,800,10);
+ 	controlP5.addSlider("variable0",-8,-1,obj.variable[0],20,20,800,10);
+ 	controlP5.addSlider("variable1",-0.14,1.3,obj.variable[1],20,40,800,10);
+ 	controlP5.addSlider("variable2",-1,4.6,obj.variable[2],20,60,800,10);
+ 	controlP5.addSlider("variable3",0,1.94,obj.variable[3],20,80,800,10);
+ 	controlP5.addSlider("variable4",-0.8,1.9,obj.variable[4],20,100,800,10);
+ 	controlP5.addSlider("variable5",-6.3,7.8,obj.variable[5],20,120,800,10);
+ 	controlP5.addSlider("variable6",-0.001,0.18,obj.variable[6],20,140,800,10);
+ 	controlP5.addSlider("variable7",-0.89,1.8,obj.variable[7],20,160,800,10);
+ 	controlP5.addSlider("variable8",-0.0,0.18,obj.variable[8],20,180,800,10);
  	
- 	controlP5.addSlider("variable0",-10,10,obj.variable[0],20,20,800,10);
- 	controlP5.addSlider("variable1",-10,10,obj.variable[1],20,40,800,10);
- 	controlP5.addSlider("variable2",-10,10,obj.variable[2],20,60,800,10);
- 	controlP5.addSlider("variable3",-10,10,obj.variable[3],20,80,800,10);
- 	controlP5.addSlider("variable4",-10,10,obj.variable[4],20,100,800,10);
- 	controlP5.addSlider("variable5",-10,10,obj.variable[5],20,120,800,10);
- 	controlP5.addSlider("variable6",-10,10,obj.variable[6],20,140,800,10);
- 	controlP5.addSlider("variable7",-10,10,obj.variable[7],20,160,800,10);
- 	controlP5.addSlider("variable8",-10,10,obj.variable[8],20,180,800,10);
 
  	
  	camera1 = new Camera(this, 450, 450, 700, 450, 450,0);
