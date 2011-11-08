@@ -4,8 +4,8 @@ import japplemenubar.*;
 LorenzFormula lorenzFormula;
 LorenzVisual lorenzVisual;
 FullScreen fullScreen;
+PointList pointList;
 
-//PointList pointList;
 PFont frutigerRoman24;
 PImage blueLight;
 // The font must be located in the current sketch's 
@@ -21,7 +21,7 @@ void setup(){
 	fullScreen = new FullScreen(this); 
 	lorenzFormula = new LorenzFormula();
 	lorenzVisual = new LorenzVisual(lorenzFormula);
-//	pointList = new pointList(lorenzFormula);
+	pointList = new PointList(lorenzFormula);
 
 
 
@@ -43,7 +43,7 @@ void draw(){
 
 	lorenzVisual.draw();
 	
-//	pointList.draw();
+	pointList.draw();
 
 }
 

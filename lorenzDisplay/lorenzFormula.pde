@@ -3,7 +3,7 @@ class LorenzFormula {
 		direction=1,
 		iteration=1000;
 	
-	float 	animationStep=0.01,
+	float 	animationStep=0.0001,
 			x,y,z;
 	
 /*	
@@ -12,15 +12,15 @@ defaults = {
 };		
 */
 	float[][] defaults ={
-			{-8, -1.11, -1.11},
-			{-0.14, 1.3, 1.12},
-			{-1, 4.6, 4.49},
+			{-2.5, -1.07, -1.11},
+			{0.25, 1.16, 1.12},
+			{3, 4.6, 4.49},
 			{0, 1.94, 0.13},
-			{-0.8, 1.9, 1.4},
+			{-0.8, 1.65, 1.4},
 			{-4, 2, 0.4},
 			{-0.001, 0.18, 0.13},
-			{-0.89, 1.7, 1.47},
-			{0, 0.15, 0.13}
+			{-0.89, 1.5, 1.47},
+			{0.01, 0.13, 0.13}
 		};
 		
 	float[][] targetAreas = {
@@ -116,14 +116,17 @@ defaults = {
 					stroke(191,231,251);
 					
 				if(i == animate) {
-					stroke(191,231,251);
+					noStroke();
 					fill(0);
 					rect(targetAreas[i][0],targetAreas[i][1],100,30);
+					stroke(191,231,251);
+					line(targetAreas[i][0],targetAreas[i][1]+30, targetAreas[i][0]+100 ,targetAreas[i][1]+30);
 					fill(255);
 					noStroke();
 					text(nf(variable[i],1,stellen),targetAreas[i][0]+8,targetAreas[i][1]+5,100,30);
 				}
-				else rect(targetAreas[i][0],targetAreas[i][1],100,30);
+				else  line(targetAreas[i][0],targetAreas[i][1]+30, targetAreas[i][0]+100 ,targetAreas[i][1]+30);
+
 								
 			
 			
