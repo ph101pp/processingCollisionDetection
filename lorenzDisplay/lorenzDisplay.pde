@@ -1,29 +1,53 @@
+import fullscreen.*;
+import japplemenubar.*;
+
 LorenzFormula lorenzFormula;
 LorenzVisual lorenzVisual;
-PFont monaco25;
+FullScreen fullScreen;
+
+//PointList pointList;
+PFont frutigerRoman24;
+PImage blueLight;
 // The font must be located in the current sketch's 
 // "data" directory to load successfully 
 void setup(){
-	size(900, 1000, P3D); 
-	background(0);
+	size(1680, 1050, P3D); 
+//	size(900, 1000, P3D); 
 	lights();
-	loadFont("Monaco-25.vlw");
+	frutigerRoman24 = loadFont("FrutigerCE-Roman-24.vlw");
+	blueLight = loadImage("images/Lorenz84AbstractorDesign.png");
+	background(blueLight);
 
+	fullScreen = new FullScreen(this); 
 	lorenzFormula = new LorenzFormula();
 	lorenzVisual = new LorenzVisual(lorenzFormula);
-	monaco25=loadFont("Monaco-25.vlw");
+//	pointList = new pointList(lorenzFormula);
+
+
+
 	
+	fullScreen.enter(); 
+
+
 }
 
 
 void draw(){
-	background(0);
+	background(blueLight);
+	drawStaticElements();
+	
 	lorenzFormula.animation();
+	lorenzFormula.formulaEventListener();
 	lorenzFormula.generatePoints();
 	lorenzFormula.printFormula();
 
-
 	lorenzVisual.draw();
+	
+//	pointList.draw();
+
+}
+
+void drawStaticElements(){
 
 }
 

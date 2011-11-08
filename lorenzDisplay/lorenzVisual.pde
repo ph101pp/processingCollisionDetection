@@ -1,6 +1,6 @@
 class LorenzVisual {
 	LorenzFormula 	lorenzFormula;
-	float			zoom=100,
+	float			zoom=85,
 					speed=0.05,
 					xmag, ymag, newXmag, newYmag, diff, rotationX, rotationY, rotationZ;
 	int 			rotationTimer;
@@ -17,7 +17,7 @@ class LorenzVisual {
 		newXmag = mouseX/float(width) * TWO_PI;
 		newYmag = mouseY/float(height) * TWO_PI;
 	
-		if(mousePressed && mouseY > height/2) {
+		if(mousePressed && mouseY > 200 && mouseX > 400) {
 			rotationTimer = millis();
 			
 			diff = xmag-newXmag;
@@ -75,7 +75,16 @@ class LorenzVisual {
 	void draw (){
 		rotation();
 		pushMatrix();
-			translate(width/2-30, 100+height/2);
+			translate(1030, 500);
+
+			stroke(39,46,49);
+			
+/*			line(0,0,0,100,0,0);
+			line(0,0,0,0,-100,0);
+			line(0,0,0,0,0,100);
+*/
+//			rect(0,0,0,1,1,1);
+
 			stroke(255);
 			noFill();
 			rotateX(radians(rotation[0]));
