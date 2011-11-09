@@ -35,6 +35,8 @@ defaults = {
 		{400,59}
 	};
 	
+	float[] formulaPosition = {465, 85};
+	
 	float[] variable= {-1.11, 1.12, 4.49, 0.13, 1.4, 0.4, 0.13, 1.47, 0.13};
 	
 	float[][] points = new float[iteration][3];
@@ -62,7 +64,7 @@ defaults = {
 		if(!mousePressed) return;
 		
 		for(int i=0; i<targetAreas.length; i++) {
-			if(mouseY > targetAreas[i][1]+80 && mouseY < targetAreas[i][1]+30+80 && mouseX > targetAreas[i][0]+385 && mouseX < targetAreas[i][0]+100+385) {
+			if(mouseY > targetAreas[i][1]+formulaPosition[1] && mouseY < targetAreas[i][1]+30+formulaPosition[1] && mouseX > targetAreas[i][0]+formulaPosition[0] && mouseX < targetAreas[i][0]+100+formulaPosition[0]) {
 				animate=i;
 				direction=1;
 			}
@@ -92,14 +94,14 @@ defaults = {
 		z+=dz;
 	}
 //////////////////////////////////////////////////////////
-	void printFormula(){
+	void printFormula(LorenzVisual lorenzVisual){
 		int stellen=5;
 		String 	x="dx = (  "+nf(variable[0],1,stellen)+"  * x - y * y - z * z +  "+nf(variable[1],1,stellen)+"  *  "+nf(variable[2],1,stellen)+"  ) *  "+nf(variable[3],1,stellen),
 				y="dy = ( -y + x * y -  "+nf(variable[4],1,stellen)+"  * x * z +  "+nf(variable[5],1,stellen)+"  ) *  "+nf(variable[6],1,stellen),
 				z="dz = (-z +  "+nf(variable[7],1,stellen)+"  * x * y + x * z) *  "+nf(variable[8],1,stellen);
 		
 		pushMatrix();
-			translate(385,80);
+			translate(formulaPosition[0],formulaPosition[1]);
 			textAlign(LEFT);
 			fill(38,46,49);
 			textFont(frutigerRoman24);
@@ -107,12 +109,16 @@ defaults = {
 			text(y, 0, 32, width-40, 200); 
 			text(z, 0, 64, width-40, 200); 
 			
+/*			text("Rotation X: "+nf(lorenzVisual.rotation[0],3,2)+" Degrees", 0, 106, width-40, 200 );
+			text("Rotation Y: "+nf(lorenzVisual.rotation[1],3,2)+" Degrees", 0, 138, width-40, 200 );
+			text("Points: "+iteration, 0, 170, width-40, 200 );
+*/			
 			
 			for(int i=0; i<targetAreas.length; i++) {
 				noFill();
 				stroke(38,46,49);
 				
-				if(mouseY > targetAreas[i][1]+80 && mouseY < targetAreas[i][1]+30+80 && mouseX > targetAreas[i][0]+385 && mouseX < targetAreas[i][0]+100+385) 
+				if(mouseY > targetAreas[i][1]+formulaPosition[1] && mouseY < targetAreas[i][1]+30+formulaPosition[1] && mouseX > targetAreas[i][0]+formulaPosition[0] && mouseX < targetAreas[i][0]+100+formulaPosition[0]) 
 					stroke(191,231,251);
 					
 				if(i == animate) {
