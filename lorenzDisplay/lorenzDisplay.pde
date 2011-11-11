@@ -5,11 +5,13 @@ LorenzFormula lorenzFormula;
 LorenzVisual lorenzVisual;
 FullScreen fullScreen;
 PointList pointList;
+EventListener eventListener;
 
 PFont 	frutigerRoman24,
 		frutigerRoman16,
 		monaco9;
 PImage blueLight;
+
 
 void setup(){
 	size(1680, 1050, P3D); 
@@ -26,6 +28,7 @@ void setup(){
 	lorenzFormula = new LorenzFormula();
 	lorenzVisual = new LorenzVisual(lorenzFormula);
 	pointList = new PointList(lorenzFormula, lorenzVisual);
+	eventListener = new EventListener(lorenzFormula, lorenzVisual, pointList);
 
 
 
@@ -39,7 +42,7 @@ void setup(){
 void draw(){
 	background(blueLight);
 	
-	lorenzFormula.animation();
+	if(!lorenzFormula.paused) lorenzFormula.animation();
 	lorenzFormula.formulaEventListener();
 	lorenzFormula.generatePoints();
 	lorenzFormula.printFormula(lorenzVisual);
@@ -47,6 +50,8 @@ void draw(){
 	lorenzVisual.draw();
 	
 	pointList.draw();
+	eventListener.click();
+	eventListener.hover();
 
 }
 

@@ -86,7 +86,7 @@ class LorenzVisual {
 			line(0,0,0,0,-100,0);
 			line(0,0,0,0,0,100);
 */
-			rect(0,0,0,1,1,1);
+//			rect(0,0,0,1,1,1);
 
 			stroke(255,255,255,200);
 			noFill();

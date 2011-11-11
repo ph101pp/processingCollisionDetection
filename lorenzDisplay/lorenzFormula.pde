@@ -1,4 +1,6 @@
 class LorenzFormula {
+	boolean paused=false;
+
 	int animate=5,
 		direction=1,
 		iteration=1000;
