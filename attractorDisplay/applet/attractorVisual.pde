@@ -1,11 +1,11 @@
 class LorenzVisual {
 	LorenzFormula 	lorenzFormula;
-	float			zoom=85,
+	float			zoom=1,
 					speed=0.05,
 					xmag, ymag, newXmag, newYmag, diff, rotationX, rotationY, rotationZ;
 	int 			rotationTimer;
 	
-	float[]			rotation= {0,90,0},
+	float[]			rotation= new float[3],
 					matrix = new float[3],
 					position = {1020,510};
 					
@@ -62,32 +62,22 @@ class LorenzVisual {
 	}
 ///////////////////////////////////////////////////////////
 	void generateShape(){
-		beginShape();
-			for(int i=0; i<lorenzFormula.points.length; i++) {
-				float 	x =lorenzFormula.points[i][0],
-						y =lorenzFormula.points[i][1],
-						z =lorenzFormula.points[i][2];
-			
-				float[] boxShades= {1, 20, 50, 100};
-				
-/*				
+		for(int i=0; i<lorenzFormula.points.length; i++) {
+			float 	x =lorenzFormula.points[i][0],
+					y =lorenzFormula.points[i][1],
+					z =lorenzFormula.points[i][2];
 				pushMatrix();
 					noStroke();
 					translate(x*zoom,y*zoom,z*zoom);
 				
-					for(int k=0; k<boxShades.length; k++) {
-						if(k==0) fill(255,255,255,255);
-						else fill(255,255,255,10/(k*k));
-						box(boxShades[k]);
+					
+					for(int k=1 ; k<10; k++) {
+						fill(255,255,255,100/k);
+						sphere(k);
 
 					}
 				popMatrix();
-*/
-
-
-					curveVertex(x*zoom,y*zoom,z*zoom);
-			}
-		endShape();
+		}
 	}
 	
 ///////////////////////////////////////////////////////////

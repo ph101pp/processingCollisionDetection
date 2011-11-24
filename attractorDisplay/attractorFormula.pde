@@ -1,11 +1,11 @@
 class LorenzFormula {
-	boolean paused=true;
+	boolean paused=false;
 
 	int animate=5,
 		direction=1,
 		iteration=1000;
 	
-	float 	animationStep=0.0001,
+	float 	animationStep=0.000001,
 			x,y,z;
 	
 /*	
@@ -14,15 +14,10 @@ defaults = {
 };		
 */
 	float[][] defaults ={
-			{-2.5, -1.07, -1.11},
-			{0.25, 1.16, 1.12},
-			{3, 4.6, 4.49},
-			{0, 1.94, 0.13},
-			{-0.8, 1.65, 1.4},
-			{-4, 2, 0.4},
-			{-0.001, 0.18, 0.13},
-			{-0.89, 1.5, 1.47},
-			{0.01, 0.13, 0.13}
+			{-1, 3, 1},
+			{ -0.8,  3.8, 1.8},
+			{-2.71,2.71, 0.71},
+			{-1.51,3.51, 1.51},
 		};
 		
 	float[][] targetAreas = {
@@ -30,16 +25,11 @@ defaults = {
 		{390,-5},
 		{515,-5},
 		{655,-5},
-		{190,27},
-		{395,27},
-		{535,27},
-		{110,59},
-		{400,59}
 	};
 	
 	float[] formulaPosition = {465, 85};
 	
-	float[] variable= {-1.11, 1.12, 4.49, 0.13, 1.4, 0.4, 0.13, 1.47, 0.13};
+	float[] variable= {1, 1.8, 0.71, 1.51};
 	
 	float[][] points = new float[iteration][3];
 	
@@ -88,19 +78,19 @@ defaults = {
 	}
 ///////////////////////////////////////////////////////////
 	void iterate(){
-		float	dx = (variable[0] * x - y * y - z * z + variable[1] * variable[2]) * variable[3],
-				dy = (-y + x * y - variable[4] * x * z + variable[5]) * variable[6],
-				dz = (-z + variable[7] * x * y + x * z) * variable[8];
+		float	dx = sin(variable[0]*y)-z*cos(variable[1]*x),
+				dy = z*sin(variable[2]*x)-cos(variable[3]*x),
+				dz = sin(x);
 		x+=dx;
 		y+=dy;
 		z+=dz;
 	}
 //////////////////////////////////////////////////////////
 	void printFormula(LorenzVisual lorenzVisual){
-		int stellen=5;
-		String 	x="dx = (  "+nf(variable[0],1,stellen)+"  * x - y * y - z * z +  "+nf(variable[1],1,stellen)+"  *  "+nf(variable[2],1,stellen)+"  ) *  "+nf(variable[3],1,stellen),
-				y="dy = ( -y + x * y -  "+nf(variable[4],1,stellen)+"  * x * z +  "+nf(variable[5],1,stellen)+"  ) *  "+nf(variable[6],1,stellen),
-				z="dz = (-z +  "+nf(variable[7],1,stellen)+"  * x * y + x * z) *  "+nf(variable[8],1,stellen);
+		int stellen=7;
+		String 	x="dx = sin(y*"+nf(variable[0],1,stellen)+") - z* cos(x*"+nf(variable[1],1,stellen)+");",
+				y="dx = z*sin(x*"+nf(variable[2],1,stellen)+") - cos(y*"+nf(variable[3],1,stellen)+");",
+				z="dz = sin(x);";
 		
 		pushMatrix();
 			translate(formulaPosition[0],formulaPosition[1]);
