@@ -22,6 +22,7 @@ int				i, rotationY=0;
 ///////////////////////////////////////////////////////////
 void setup() {
 	size(1500, 1000, P3D);
+	frameRate(100);
 	
 	position= new float[] {1000, height/2, -300};
 	that=this;
@@ -56,7 +57,7 @@ void draw() {
 	i=0;
 	for(int k=0; k<iteration; k++) {
 		if(k%10 ==0 || true) i++;
-		transformMatrix[k]=i/1.3;
+		transformMatrix[k]=i/1.5;
 	}
 //	/GET TRANSFROM MATRIX
 
@@ -75,14 +76,14 @@ void draw() {
 		averY+=points[k][1];
 		averZ+=points[k][2];
 		
-		if(true && k<= maxVol*iteration) continue;
+		if(false && k<= maxVol*iteration) continue;
 
-		float chaosRadius=transformMatrix[i];		
+		float chaosRadius=transformMatrix[i]*1.7;		
 		
 		
-		x1 = noise(0,chaosRadius)-chaosRadius/2;
-		y1 = noise(0,chaosRadius)-chaosRadius/2;
-		z1 = noise(0,chaosRadius)-chaosRadius/2;
+		x1 += chaosRadius;
+//		y1 += chaosRadius;
+//		z1 += chaosRadius;
 		
 		x1/=that.lorenzVisual.zoom;
 		y1/=that.lorenzVisual.zoom;
@@ -107,7 +108,8 @@ void draw() {
 	println(averY);
 	
 	background(255);
-	translate(position[0]-averX/10, position[1]-averY/10, position[2]-averZ/10);
+//	translate(position[0]-averX/10, position[1]-averY/10, position[2]-averZ/10);
+	translate(100,height/2,100);
 	rotateY(rotationY);
 
 	fill(255,0,0);
