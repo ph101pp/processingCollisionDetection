@@ -1,6 +1,6 @@
 class LorenzVisual {
 	lorenzSoundOne 	that;
-	float			zoom=50,
+	float			zoom=70,
 					speed=0.05,
 					xmag, ymag, newXmag, newYmag, diff, rotationX, rotationY, rotationZ;
 	int 			rotationTimer;

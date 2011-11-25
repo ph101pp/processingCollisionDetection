@@ -8,7 +8,7 @@ class LorenzFormula {
 						direction=1,
 						iteration=1000;
 	
-	float 				animationStep=0.0001,
+	float 				animationStep=0.001,
 						x,y,z;
 	
 	float[] 			formulaPosition = {465, 85},
