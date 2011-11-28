@@ -31,7 +31,6 @@ int rotationTimer;
 
 void setup(){
 	size(900, 1000, P3D); 
-	background(0);
 	lights();
 
 	controlP5 = new ControlP5(this);
