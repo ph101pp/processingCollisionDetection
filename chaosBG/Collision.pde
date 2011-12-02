@@ -1,49 +1,92 @@
 class Collision {
-	chaosBG			that;
-	float 			gridSize; 
-	Iterator		itr;
-	ChaosElement	testElement;
-	float			distance;
-	PVector 		velocity1,velocity2, mouse;
-	PVector 		wind;
-	int 			maxZ=width/2;
-	float			mouseDist;
-	ArrayList<ChaosElement>[][] elements;
+	chaosBG							that;
+	Collision						nextCollision;
+	Iterator						itr;
+	ChaosElement					testElement;
+	ArrayList<ChaosElement>			elements;
+	ArrayList<ChaosElement>[][] 	quadrants;
+	
+	float 							gridSize; 
+	float							distance;
+	PVector							velocity1,velocity2, mouse;
+	PVector 						wind;
+	int 							maxZ;;
+	float							mouseDist;
+	
 ///////////////////////////////////////////////////////////
-    Collision (chaosBG that_, float gridSize_) {
+    Collision (chaosBG that_, ArrayList elements_, float gridSize_, boolean flag) {
     	that=that_;
+    	elements=elements_;
     	gridSize=gridSize_;
-    	elements= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))][int(ceil(height/gridSize))]; 
+    	quadrants= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))+2][int(ceil(height/gridSize))+2]; 
+    }
+    Collision (chaosBG that_, ArrayList elements_, float gridSize_) {
+    	that=that_;
+    	elements=elements_;
+    	gridSize=gridSize_;
+    	maxZ=that.depth;
+    	quadrants= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))+2][int(ceil(height/gridSize))+2]; 
 		float rand=0.3;
     	wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
+    	nextCollision = new Collision(that, new ArrayList(), gridSize, true);
     }
+	    
 ///////////////////////////////////////////////////////////
-	void add (ChaosElement element) {
-	 	testFrame(element);
-		int x = int(floor(element.location.x/gridSize));
-		int y = int(floor(element.location.y/gridSize));
+	void add(ChaosElement element) {	 	
+		PVector quadrant = getQuadrant(element);		
+		int x= int(quadrant.x);
+		int y= int(quadrant.y);
 		
-		if(elements[x][y] == null) elements[x][y] = new ArrayList();
-		elements[x][y].add(element);
+		if(quadrants[x][y] == null) quadrants[x][y] = new ArrayList();
+		quadrants[x][y].add(element);
+	}
+///////////////////////////////////////////////////////////
+	PVector getQuadrant(ChaosElement element) {
+		int x = 1+int(floor(element.location.x/gridSize));
+		int y = 1+int(floor(element.location.y/gridSize));
+		
+		if(x < 1) x=0;
+		if(x > int(ceil(width/gridSize))) x=int(ceil(width/gridSize))+1;
+		
+		if(y < 1) y=0;
+		if(y > int(ceil(height/gridSize))) y=int(ceil(height/gridSize))+1;
+			
+		return new PVector(x,y);	
+	}
+///////////////////////////////////////////////////////////
+	void createCollisionMap() {
+		int length=0;
+		for(int i=0; i< nextCollision.quadrants.length; i++)
+			for(int k=0; k< nextCollision.quadrants[i].length; k++)
+				if(nextCollision.quadrants[i][k] != null)
+					length+=nextCollision.quadrants[i][k].size();
+		
+		if(length == elements.size()) quadrants=nextCollision.quadrants.clone();
+		else {
+    		quadrants= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))+2][int(ceil(height/gridSize))+2]; 
+			itr=elements.iterator();
+			while(itr.hasNext()) 
+				add((ChaosElement)itr.next());
+		}	
 	}
 ///////////////////////////////////////////////////////////
 	void test(ChaosElement element) {
-		testFrame(element);
-		int x = int(floor(element.location.x/gridSize));
-		int y = int(floor(element.location.y/gridSize));
+		PVector quadrant = getQuadrant(element);		
+		int x= int(quadrant.x);
+		int y= int(quadrant.y);
 		
-		if(elements[x][y] != null)
-			elements[x][y].remove(element);
+		if(quadrants[x][y] != null)
+			quadrants[x][y].remove(element);
 		
 		for(int i=-1; i<=1; i++) 
-			if(x+i >=0 && x+i < elements.length)
+			if(x+i >=0 && x+i < quadrants.length)
 				for(int k=-1; k<=1; k++) 
-					if(y+k >=0 && y+k < elements[x+i].length && elements[x+i][y+k] != null) {
-						itr=elements[x+i][y+k].iterator();
+					if(y+k >=0 && y+k < quadrants[x+i].length && quadrants[x+i][y+k] != null) {
+						itr=quadrants[x+i][y+k].iterator();
 						while(itr.hasNext())
 							collide(element, (ChaosElement) itr.next());
 					}
-		that.newCollision.add(element);
+		nextCollision.add(element);
 	}
 ///////////////////////////////////////////////////////////
 	void testFrame (ChaosElement element) {
@@ -80,17 +123,27 @@ class Collision {
 		float force=(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
 		
 		if(mousePressed) {
-			mouse=new PVector(mouseX, mouseY,0);
-			mouseDist= PVector.dist(element1.location,mouse);
-			if(mouseDist < 300) {
+			that.dropX=mouseX;
+			that.dropY=mouseY;
+		}
+		if(frameCount% 10 == 0) {
+			that.dropX=random(width);
+			that.dropY=random(height);
+		}
+		
+		
+		if(mousePressed || true) {
+			mouse=new PVector(that.dropX, that.dropY,0);
+			mouseDist= PVector.dist(new PVector(element1.location.x,element1.location.y),new PVector(that.dropX, that.dropY));
+			if(mouseDist < random(100,500)) {
 				velocity2= PVector.sub(element1.location,mouse);
 				velocity2.normalize();
-				velocity2.mult(1.3);		
+				velocity2.mult(1.2);		
 				velocity1.add(velocity2);
 			}
 		}
 		
-		
+
 		wind.mult(force);
 		velocity1.add(wind);
 	//	element1.velocity.add(velocity1);

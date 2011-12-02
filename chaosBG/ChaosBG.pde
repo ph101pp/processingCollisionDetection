@@ -1,13 +1,15 @@
+import fullscreen.*;
+import japplemenubar.*;
 import 			java.util.*;
 import damkjer.ocd.*;
-Camera 			camera1;
 chaosBG			that;
 
-int 			elementCount = 10000;
+int 			elementCount = 4000;
+int 			depth = 1;
 ArrayList 		elements = new ArrayList<ChaosElement>();
 
 Collision		collision;
-Collision		newCollision;
+FullScreen fullScreen;
 
 ChaosElement	element;
 
@@ -18,31 +20,33 @@ float 			mouseRadius;
 
 float	xmag, ymag, newXmag, newYmag, diff,
 		rotationX,rotationY,rotationZ;
+float 		dropX=0,
+			dropY=0;
 
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1000,1000,P3D);
-	collision = new Collision(that, 30);
+	size(1680,1050,P3D);
 	background(255);
 	stroke(0);
+	frameRate(15);
 	noFill();
+	fullScreen = new FullScreen(this); 
+//	fullScreen.enter(); 
 	
-	camera1 = new Camera(this, width/2, height/2, 0, width, height/2, 0);
 
 //	Create Elements
 
-	pushMatrix();
 	for (int i=0; i<elementCount; i++) {
 		element=new ChaosElement(this);
 		elements.add(element);
-		collision.add(element);
 	}
-	popMatrix();
+	collision = new Collision(that, elements, 50);
 }
 ///////////////////////////////////////////////////////////
 void draw() {
-//	translate(width/2,height/2,0);
+	println(frameRate);
+	translate(0,0,0);
 //	rotateX(mouseY*360/height);
 
 	pushMatrix();
@@ -53,7 +57,8 @@ void draw() {
 //	rotation ();
 	background(255);
 	count=0;
-	newCollision = new Collision(that,30);
+
+	collision.createCollisionMap();
 	
 	Iterator itr = elements.iterator(); 
 	while(itr.hasNext()) {
@@ -61,7 +66,6 @@ void draw() {
 		collision.test(element);
 	}
 	
-	collision = newCollision;
 //	noLoop();
 //	camera1.feed();
 	popMatrix();

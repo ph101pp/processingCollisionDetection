@@ -7,7 +7,7 @@ class ChaosElement {
 ///////////////////////////////////////////////////////////
 	ChaosElement(chaosBG that_) {
 		that=that_;
-		location = new PVector (random(width), random(height),random(width));
+		location = new PVector (random(width), random(height),random(that.depth));
 		velocity = new PVector (0,0,0);
 	}
 ///////////////////////////////////////////////////////////
