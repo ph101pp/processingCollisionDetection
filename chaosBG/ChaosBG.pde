@@ -1,3 +1,8 @@
+import org.openkinect.*;
+import org.openkinect.processing.*;
+import hypermedia.video.*;
+import processing.video.*;
+import java.awt.*;
 import fullscreen.*;
 import japplemenubar.*;
 import 			java.util.*;
@@ -5,11 +10,12 @@ import damkjer.ocd.*;
 chaosBG			that;
 
 int 			elementCount = 4000;
-int 			depth = 1;
+int 			depth = 20;
 ArrayList 		elements = new ArrayList<ChaosElement>();
 
 Collision		collision;
 FullScreen fullScreen;
+KinectTracker tracker;
 
 ChaosElement	element;
 
@@ -22,17 +28,21 @@ float	xmag, ymag, newXmag, newYmag, diff,
 		rotationX,rotationY,rotationZ;
 float 		dropX=0,
 			dropY=0;
+			
+float[]		blobPosition= new float[2];
 
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1680,1050,P3D);
+	size(1000,800,P3D);
 	background(255);
 	stroke(0);
 	frameRate(15);
 	noFill();
 	fullScreen = new FullScreen(this); 
 //	fullScreen.enter(); 
+  	
+  	tracker = new KinectTracker(this);
 	
 
 //	Create Elements
@@ -48,7 +58,7 @@ void draw() {
 	println(frameRate);
 	translate(0,0,0);
 //	rotateX(mouseY*360/height);
-
+	blobPosition=tracker.calculateBlobs();
 	pushMatrix();
 //	translate(-width/2,-height/2,(mouseX-width/2)*3);
 	rotation+=0.3;
@@ -69,26 +79,4 @@ void draw() {
 //	noLoop();
 //	camera1.feed();
 	popMatrix();
-}
-void rotation () {
-//	rotationY=obj.rotation[1]+0.5;
-	newXmag = mouseX/float(width) * TWO_PI;
-	newYmag = mouseY/float(height) * TWO_PI;
-
-	if(mousePressed) {
-		
-		diff = xmag-newXmag;
-		if (abs(diff) >  0.01) rotationY -= degrees(diff/1.0);
-	
-		diff = ymag-newYmag;
-		if (abs(diff) >  0.01) rotationX += degrees(diff/1.0);
-		
-	}
-	
-	xmag=newXmag;
-	ymag=newYmag;
-	rotateX(rotationX);
-	rotateY(rotationY);
-	rotateZ(rotationZ);
-
 }

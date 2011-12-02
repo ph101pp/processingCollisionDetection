@@ -1,7 +1,7 @@
 
 class KinectTracker {
  	OpenCV opencv;
-	kinectBlob that;
+	chaosBG that;
 	Kinect kinect;
   // Size of kinect image
   int kw = 640;
@@ -20,7 +20,7 @@ class KinectTracker {
 
   PImage display;
 
-  KinectTracker(kinectBlob that_) {
+  KinectTracker(chaosBG that_) {
  	that=that_;
 	opencv = new OpenCV(that);
 	opencv.allocate(kw, kh);

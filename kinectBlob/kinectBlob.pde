@@ -23,6 +23,6 @@ void draw() {
   fill(0);
   stroke(255,255,0);
 
-   tracker.calculateBlobs();
+  println (tracker.calculateBlobs());
 
 }

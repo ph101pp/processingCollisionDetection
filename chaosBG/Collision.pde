@@ -121,24 +121,29 @@ class Collision {
 		velocity1.mult(2);		
 		
 		float force=(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
-		
-		if(mousePressed) {
-			that.dropX=mouseX;
-			that.dropY=mouseY;
+		float radius=0;
+		if(int(blobPosition[0]) > 0 && int(blobPosition[1]) > 0) {
+			that.dropX=map(blobPosition[0],0,640,0,width);
+			that.dropY=map(blobPosition[1],0,480,0,height);
+			radius=200;
 		}
 		if(frameCount% 10 == 0) {
 			that.dropX=random(width);
 			that.dropY=random(height);
+			radius = 200;
+		}
+		else {
+			radius = 200;
 		}
 		
 		
-		if(mousePressed || true) {
+		if(int(blobPosition[0]) > 0) {
 			mouse=new PVector(that.dropX, that.dropY,0);
 			mouseDist= PVector.dist(new PVector(element1.location.x,element1.location.y),new PVector(that.dropX, that.dropY));
-			if(mouseDist < random(100,500)) {
+			if(mouseDist < radius) {
 				velocity2= PVector.sub(element1.location,mouse);
 				velocity2.normalize();
-				velocity2.mult(1.2);		
+				velocity2.mult(1.1);		
 				velocity1.add(velocity2);
 			}
 		}
