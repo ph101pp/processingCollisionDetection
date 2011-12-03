@@ -12,6 +12,8 @@ class Collision {
 	PVector 						wind;
 	int 							maxZ;;
 	float							mouseDist;
+	float							radius=200;
+	float 							rand=0.1;
 	
 ///////////////////////////////////////////////////////////
     Collision (chaosBG that_, ArrayList elements_, float gridSize_, boolean flag) {
@@ -26,7 +28,6 @@ class Collision {
     	gridSize=gridSize_;
     	maxZ=that.depth;
     	quadrants= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))+2][int(ceil(height/gridSize))+2]; 
-		float rand=0.3;
     	wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
     	nextCollision = new Collision(that, new ArrayList(), gridSize, true);
     }
@@ -78,7 +79,7 @@ class Collision {
 		if(quadrants[x][y] != null)
 			quadrants[x][y].remove(element);
 		
-		for(int i=-1; i<=1; i++) 
+		for(int i=1; i>=-1; i--) 
 			if(x+i >=0 && x+i < quadrants.length)
 				for(int k=-1; k<=1; k++) 
 					if(y+k >=0 && y+k < quadrants[x+i].length && quadrants[x+i][y+k] != null) {
@@ -120,40 +121,44 @@ class Collision {
 		velocity1.normalize();
 		velocity1.mult(2);		
 		
-		float force=(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
-		float radius=0;
+		float force=1;//(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
 		if(int(blobPosition[0]) > 0 && int(blobPosition[1]) > 0) {
 			that.dropX=map(blobPosition[0],0,640,0,width);
 			that.dropY=map(blobPosition[1],0,480,0,height);
 			radius=200;
 		}
-		if(frameCount% 10 == 0) {
+		else if(mousePressed && that.mouseMoved) {
+			that.dropX=mouseX;
+			that.dropY=mouseY;
+			radius=200;
+		}
+		else if(frameCount% 10 == 0) {
 			that.dropX=random(width);
 			that.dropY=random(height);
-			radius = 200;
+			radius = random(height/2);
 		}
-		else {
-			radius = 200;
+		if(frameCount% 30 == 0) {
+   		 	wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 		}
 		
-		
-		if(int(blobPosition[0]) > 0) {
+		if(int(blobPosition[0]) > 0 || true) {
 			mouse=new PVector(that.dropX, that.dropY,0);
 			mouseDist= PVector.dist(new PVector(element1.location.x,element1.location.y),new PVector(that.dropX, that.dropY));
 			if(mouseDist < radius) {
 				velocity2= PVector.sub(element1.location,mouse);
 				velocity2.normalize();
-				velocity2.mult(1.1);		
+				velocity2.mult(1);		
 				velocity1.add(velocity2);
 			}
 		}
 		
 
-		wind.mult(force);
+	//	wind.mult(force);
 		velocity1.add(wind);
 	//	element1.velocity.add(velocity1);
 	//	element1.velocity.mult(0.9);
-		element1.location.add(velocity1);
+	//	element1.location.add(velocity1);
+		element1.velocity.add(velocity1);
 		testFrame(element1);
 	}
 }

@@ -31,6 +31,9 @@ float 		dropX=0,
 			
 float[]		blobPosition= new float[2];
 
+PVector		mousePos=new PVector(mouseX,mouseY);
+boolean		mouseMoved;
+
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
@@ -42,7 +45,7 @@ void setup() {
 	fullScreen = new FullScreen(this); 
 //	fullScreen.enter(); 
   	
-  	tracker = new KinectTracker(this);
+ // 	tracker = new KinectTracker(this);
 	
 
 //	Create Elements
@@ -53,12 +56,14 @@ void setup() {
 	}
 	collision = new Collision(that, elements, 50);
 }
+
+
 ///////////////////////////////////////////////////////////
 void draw() {
 	println(frameRate);
 	translate(0,0,0);
 //	rotateX(mouseY*360/height);
-	blobPosition=tracker.calculateBlobs();
+//	blobPosition=tracker.calculateBlobs();
 	pushMatrix();
 //	translate(-width/2,-height/2,(mouseX-width/2)*3);
 	rotation+=0.3;
@@ -67,6 +72,9 @@ void draw() {
 //	rotation ();
 	background(255);
 	count=0;
+	
+	if(PVector.dist(mousePos,new PVector(mouseX, mouseY)) >0 ) mouseMoved=true;
+	else mouseMoved=false;
 
 	collision.createCollisionMap();
 	
@@ -74,9 +82,13 @@ void draw() {
 	while(itr.hasNext()) {
 		element= (ChaosElement)itr.next();
 		collision.test(element);
+		element.location.add(element.velocity);
+		element.velocity= new PVector(0,0,0);
 	}
+	
 	
 //	noLoop();
 //	camera1.feed();
 	popMatrix();
+	mousePos=new PVector(mouseX,mouseY);
 }
