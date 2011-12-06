@@ -6,7 +6,7 @@ class ChaosElement {
 	PVector							velocity1;
 	PVector							mouse;
 	int								lineCount=0;
-	float							friction=0.88;
+	float							friction=0.9;
 	float							radius=200;
 	float							mouseDist;
 	boolean 						drop =false;
@@ -52,7 +52,7 @@ class ChaosElement {
 			if(mouseDist < radius) {
 				velocity1= PVector.sub(location,mouse);
 				velocity1.normalize();
-				velocity1.mult(2);		
+				velocity1.mult(3);		
 				velocity.add(velocity1);
 			}
 		}

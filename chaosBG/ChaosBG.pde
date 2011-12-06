@@ -9,8 +9,8 @@ import 			java.util.*;
 import damkjer.ocd.*;
 chaosBG			that;
 
-int 			elementCount = 4000;
-int 			depth = 40;
+int 			elementCount = 6000;
+int 			depth = 20;
 ArrayList 		elements = new ArrayList<ChaosElement>();
 
 Collision		collision;
@@ -39,13 +39,13 @@ boolean		mouseMoved;
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1000,800,P3D);
+	size(1680,1080,P3D);
 	background(255);
 	stroke(0);
 	frameRate(15);
 	noFill();
 	fullScreen = new FullScreen(this); 
-//	fullScreen.enter(); 
+	fullScreen.enter(); 
   	
  // 	tracker = new KinectTracker(this);
 	

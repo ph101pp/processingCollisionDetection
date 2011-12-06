@@ -10,6 +10,7 @@ class Collision {
 	float							distance;
 	PVector							velocity1,velocity2, velocity3;
 	int 							maxZ;
+	float							force=5;
 	
 ///////////////////////////////////////////////////////////
     Collision (chaosBG that_, ArrayList elements_, float gridSize_, boolean flag) {
@@ -92,26 +93,32 @@ class Collision {
 		if(element.location.x < 0-border) {
 			element.location.x*=-1;
 //			element.velocity.x*=-1;
+			element.velocity.add(new PVector(0,force,0));
 		}
 		else if(element.location.x > width+border) {
 			element.location.x= width+border-(element.location.x-width+border);
-//			element.velocity.x= width-(element.velocity.x-width);
+///			element.velocity.x= width+border-(element.velocity.x-width+border);
+			element.velocity.add(new PVector(-force,0,0));
 		}
 		if(element.location.y < 0-border) {
 			element.location.y*=-1;
 //			element.velocity.y*=-1;
+			element.velocity.add(new PVector(0,force,0));
 		}
 		else if(element.location.y > height+border) {
 			element.location.y= height+border-(element.location.y-height+border);
-//			element.velocity.y= height-(element.velocity.y-height);
+//			element.velocity.y= height+border-(element.velocity.y-height+border);
+			element.velocity.add(new PVector(0,-force,0));
 		}
 		if(element.location.z > maxZ) {
 			element.location.z= maxZ-(element.location.z-maxZ);
 //			element.velocity.z= maxZ-(element.velocity.z-maxZ);
+			element.velocity.add(new PVector(0,0,-force));
 		}
 		else if(element.location.z < 0-border) {
 			element.location.z*=-1;
 //			element.velocity.z*=-1;
+			element.velocity.add(new PVector(0,0,force));
 		}
 	}
 
@@ -135,9 +142,9 @@ class Collision {
 			velocity2= PVector.sub(element1.location,element2.location);
 		}
 		velocity1.normalize();
-		velocity1.mult(map(distance, 0,gridSize,2,0));		
+		velocity1.mult(map(distance, 0,gridSize,force,0));		
 		velocity2.normalize();
-		velocity2.mult(map(distance, 0,gridSize,2,0));		
+		velocity2.mult(map(distance, 0,gridSize,force,0));		
 		
 	
 	//	element1.location.add(velocity1);
