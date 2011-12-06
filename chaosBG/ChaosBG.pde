@@ -10,7 +10,7 @@ import damkjer.ocd.*;
 chaosBG			that;
 
 int 			elementCount = 4000;
-int 			depth = 20;
+int 			depth = 40;
 ArrayList 		elements = new ArrayList<ChaosElement>();
 
 Collision		collision;
@@ -31,6 +31,8 @@ float 		dropX=0,
 			
 float[]		blobPosition= new float[2];
 
+PVector 	wind;
+float 		rand=0.1;
 PVector		mousePos=new PVector(mouseX,mouseY);
 boolean		mouseMoved;
 
@@ -55,13 +57,14 @@ void setup() {
 		elements.add(element);
 	}
 	collision = new Collision(that, elements, 50);
+    wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 }
 
 
 ///////////////////////////////////////////////////////////
 void draw() {
 	println(frameRate);
-	translate(0,0,0);
+	translate(0,0,depth);
 //	rotateX(mouseY*360/height);
 //	blobPosition=tracker.calculateBlobs();
 	pushMatrix();
@@ -73,6 +76,8 @@ void draw() {
 	background(255);
 	count=0;
 	
+	if(frameCount% 30 == 0) wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
+
 	if(PVector.dist(mousePos,new PVector(mouseX, mouseY)) >0 ) mouseMoved=true;
 	else mouseMoved=false;
 
@@ -82,8 +87,9 @@ void draw() {
 	while(itr.hasNext()) {
 		element= (ChaosElement)itr.next();
 		collision.test(element);
-		element.location.add(element.velocity);
-		element.velocity= new PVector(0,0,0);
+		element.move();
+		collision.testFrame(element);
+	//	element.velocity= new PVector(0,0,0);
 	}
 	
 	

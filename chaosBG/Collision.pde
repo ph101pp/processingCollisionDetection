@@ -8,12 +8,8 @@ class Collision {
 	
 	float 							gridSize; 
 	float							distance;
-	PVector							velocity1,velocity2, mouse;
-	PVector 						wind;
-	int 							maxZ;;
-	float							mouseDist;
-	float							radius=200;
-	float 							rand=0.1;
+	PVector							velocity1,velocity2, velocity3;
+	int 							maxZ;
 	
 ///////////////////////////////////////////////////////////
     Collision (chaosBG that_, ArrayList elements_, float gridSize_, boolean flag) {
@@ -28,7 +24,6 @@ class Collision {
     	gridSize=gridSize_;
     	maxZ=that.depth;
     	quadrants= (ArrayList<ChaosElement>[][]) new ArrayList[int(ceil(width/gridSize))+2][int(ceil(height/gridSize))+2]; 
-    	wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
     	nextCollision = new Collision(that, new ArrayList(), gridSize, true);
     }
 	    
@@ -69,6 +64,7 @@ class Collision {
 			while(itr.hasNext()) 
 				add((ChaosElement)itr.next());
 		}	
+		nextCollision= new Collision(that, new ArrayList(), gridSize, true);
 	}
 ///////////////////////////////////////////////////////////
 	void test(ChaosElement element) {
@@ -78,6 +74,7 @@ class Collision {
 		
 		if(quadrants[x][y] != null)
 			quadrants[x][y].remove(element);
+		else return;
 		
 		for(int i=1; i>=-1; i--) 
 			if(x+i >=0 && x+i < quadrants.length)
@@ -91,12 +88,31 @@ class Collision {
 	}
 ///////////////////////////////////////////////////////////
 	void testFrame (ChaosElement element) {
-		if(element.location.x < 0) element.location.x*=-1;
-		else if(element.location.x > width) element.location.x= width-(element.location.x-width);
-		if(element.location.y < 0) element.location.y*=-1;
-		else if(element.location.y > height) element.location.y= height-(element.location.y-height);
-		if(element.location.z > maxZ) element.location.z= maxZ-(element.location.z-maxZ);
-		else if(element.location.z < -maxZ) element.location.z= -maxZ-(element.location.z+maxZ);
+		float border =  30;
+		if(element.location.x < 0-border) {
+			element.location.x*=-1;
+//			element.velocity.x*=-1;
+		}
+		else if(element.location.x > width+border) {
+			element.location.x= width+border-(element.location.x-width+border);
+//			element.velocity.x= width-(element.velocity.x-width);
+		}
+		if(element.location.y < 0-border) {
+			element.location.y*=-1;
+//			element.velocity.y*=-1;
+		}
+		else if(element.location.y > height+border) {
+			element.location.y= height+border-(element.location.y-height+border);
+//			element.velocity.y= height-(element.velocity.y-height);
+		}
+		if(element.location.z > maxZ) {
+			element.location.z= maxZ-(element.location.z-maxZ);
+//			element.velocity.z= maxZ-(element.velocity.z-maxZ);
+		}
+		else if(element.location.z < 0-border) {
+			element.location.z*=-1;
+//			element.velocity.z*=-1;
+		}
 	}
 
 ///////////////////////////////////////////////////////////
@@ -106,59 +122,26 @@ class Collision {
 		if(distance > gridSize) return;
 		
 		if(distance < gridSize*0.9) {
-			float colorHue= maxZ-((element1.location.z-element2.location.z)/2);
+			float lineZ= abs((element1.location.z-element2.location.z)/2);
 			
-			colorHue*=200/maxZ;
-			colorHue-=155;
-			stroke(colorHue);
+			stroke(map(lineZ,0,maxZ,0,255 ));
 			line(element1.location.x,element1.location.y,element1.location.z,element2.location.x,element2.location.y,element2.location.z);
 			
 			velocity1= PVector.sub(element1.location,element2.location);
+			velocity2= PVector.sub(element2.location,element1.location);
 		}
 		else {
 			velocity1= PVector.sub(element2.location,element1.location);
+			velocity2= PVector.sub(element1.location,element2.location);
 		}
 		velocity1.normalize();
-		velocity1.mult(2);		
+		velocity1.mult(map(distance, 0,gridSize,2,0));		
+		velocity2.normalize();
+		velocity2.mult(map(distance, 0,gridSize,2,0));		
 		
-		float force=1;//(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
-		if(int(blobPosition[0]) > 0 && int(blobPosition[1]) > 0) {
-			that.dropX=map(blobPosition[0],0,640,0,width);
-			that.dropY=map(blobPosition[1],0,480,0,height);
-			radius=200;
-		}
-		else if(mousePressed && that.mouseMoved) {
-			that.dropX=mouseX;
-			that.dropY=mouseY;
-			radius=200;
-		}
-		else if(frameCount% 10 == 0) {
-			that.dropX=random(width);
-			that.dropY=random(height);
-			radius = random(height/2);
-		}
-		if(frameCount% 30 == 0) {
-   		 	wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
-		}
-		
-		if(int(blobPosition[0]) > 0 || true) {
-			mouse=new PVector(that.dropX, that.dropY,0);
-			mouseDist= PVector.dist(new PVector(element1.location.x,element1.location.y),new PVector(that.dropX, that.dropY));
-			if(mouseDist < radius) {
-				velocity2= PVector.sub(element1.location,mouse);
-				velocity2.normalize();
-				velocity2.mult(1);		
-				velocity1.add(velocity2);
-			}
-		}
-		
-
-	//	wind.mult(force);
-		velocity1.add(wind);
-	//	element1.velocity.add(velocity1);
-	//	element1.velocity.mult(0.9);
+	
 	//	element1.location.add(velocity1);
 		element1.velocity.add(velocity1);
-		testFrame(element1);
+		element2.velocity.add(velocity2);
 	}
 }

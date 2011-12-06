@@ -44,9 +44,9 @@
 
 	  var attributes = { 
             code: 'chaosBG.class',
-            archive: 'chaosBG.jar',
-            width: 500, 
-            height: 500,
+            archive: 'chaosBG.jar,openkinect.jar,OpenCV.jar,video.jar,fullscreen.jar,ocd.jar,core.jar',
+            width: 1000, 
+            height: 800,
           };
           var parameters = { 
             image: 'loading.gif',
@@ -62,11 +62,11 @@
 	  <!--[if !IE]> -->
 	  <object classid="java:chaosBG.class" 
             	  type="application/x-java-applet"
-            	  archive="chaosBG.jar"
-            	  width="500" height="500"
+            	  archive="chaosBG.jar,openkinect.jar,OpenCV.jar,video.jar,fullscreen.jar,ocd.jar,core.jar"
+            	  width="1000" height="800"
             	  standby="Loading Processing software..." >
             
-	    <param name="archive" value="chaosBG.jar" />
+	    <param name="archive" value="chaosBG.jar,openkinect.jar,OpenCV.jar,video.jar,fullscreen.jar,ocd.jar,core.jar" />
 	    
 	    <param name="mayscript" value="true" />
 	    <param name="scriptable" value="true" />
@@ -82,11 +82,11 @@
 		 http://java.sun.com/javase/6/webnotes/install/jre/autodownload.html -->
 	    <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
 		    codebase="http://java.sun.com/update/1.6.0/jinstall-6u20-windows-i586.cab"
-		    width="500" height="500"
+		    width="1000" height="800"
 		    standby="Loading Processing software..."  >
 	      
 	      <param name="code" value="chaosBG" />
-	      <param name="archive" value="chaosBG.jar" />
+	      <param name="archive" value="chaosBG.jar,openkinect.jar,OpenCV.jar,video.jar,fullscreen.jar,ocd.jar,core.jar" />
 	      
 	      <param name="mayscript" value="true" />
 	      <param name="scriptable" value="true" />
@@ -120,7 +120,7 @@
       </p>
       
       <p>
-	Source code: <a href="ChaosBG.pde">ChaosBG</a> <a href="ChaosElement.pde">ChaosElement</a> <a href="Collision.pde">Collision</a> <a href="CreateLines.pde">CreateLines</a> <a href="Mover.pde">Mover</a> 
+	Source code: <a href="ChaosBG.pde">ChaosBG</a> <a href="ChaosElement.pde">ChaosElement</a> <a href="Collision.pde">Collision</a> <a href="CreateLines.pde">CreateLines</a> <a href="KinectTracker.pde">KinectTracker</a> <a href="Mover.pde">Mover</a> 
       </p>
       
       <p>
