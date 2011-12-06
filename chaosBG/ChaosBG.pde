@@ -10,7 +10,7 @@ import damkjer.ocd.*;
 chaosBG			that;
 
 int 			elementCount = 6000;
-int 			depth = 20;
+int 			depth = 10;
 ArrayList 		elements = new ArrayList<ChaosElement>();
 
 Collision		collision;
@@ -34,7 +34,9 @@ float[]		blobPosition= new float[2];
 PVector 	wind;
 float 		rand=0.1;
 PVector		mousePos=new PVector(mouseX,mouseY);
-boolean		mouseMoved;
+float		mouseMoved;
+float		pressedStart,pressedFrames;
+float		friction=0.8;
 
 ///////////////////////////////////////////////////////////
 void setup() {
@@ -78,9 +80,15 @@ void draw() {
 	
 	if(frameCount% 30 == 0) wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 
-	if(PVector.dist(mousePos,new PVector(mouseX, mouseY)) >0 ) mouseMoved=true;
-	else mouseMoved=false;
-
+	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
+	
+	if(!mousePressed) pressedStart=frameCount;
+	if(mousePressed) pressedFrames=frameCount-pressedStart;
+	else pressedFrames=0;
+	
+	
+	if(mouseMoved>0 && friction > 0.5) friction-=0.001;
+	
 	collision.createCollisionMap();
 	
 	Iterator itr = elements.iterator(); 

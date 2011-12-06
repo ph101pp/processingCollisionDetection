@@ -92,32 +92,32 @@ class Collision {
 		float border =  30;
 		if(element.location.x < 0-border) {
 			element.location.x*=-1;
-			element.velocity.x*=-1;
+//			element.velocity.x*=-1;
 			element.velocity.add(new PVector(0,force,0));
 		}
 		else if(element.location.x > width+border) {
 			element.location.x= width+border-(element.location.x-width+border);
-			element.velocity.x= width+border-(element.velocity.x-width+border);
+//			element.velocity.x= width+border-(element.velocity.x-width+border);
 			element.velocity.add(new PVector(-force,0,0));
 		}
 		if(element.location.y < 0-border) {
 			element.location.y*=-1;
-			element.velocity.y*=-1;
+//			element.velocity.y*=-1;
 			element.velocity.add(new PVector(0,force,0));
 		}
 		else if(element.location.y > height+border) {
 			element.location.y= height+border-(element.location.y-height+border);
-			element.velocity.y= height+border-(element.velocity.y-height+border);
+//			element.velocity.y= height+border-(element.velocity.y-height+border);
 			element.velocity.add(new PVector(0,-force,0));
 		}
 		if(element.location.z > maxZ) {
 			element.location.z= maxZ-(element.location.z-maxZ);
-			element.velocity.z= maxZ-(element.velocity.z-maxZ);
+//			element.velocity.z= maxZ-(element.velocity.z-maxZ);
 			element.velocity.add(new PVector(0,0,-force));
 		}
 		else if(element.location.z < 0-border) {
 			element.location.z*=-1;
-			element.velocity.z*=-1;
+//			element.velocity.z*=-1;
 			element.velocity.add(new PVector(0,0,force));
 		}
 	}
@@ -131,7 +131,7 @@ class Collision {
 		if(distance < gridSize*0.9) {
 			float lineZ= abs((element1.location.z-element2.location.z)/2);
 			
-			stroke(map(lineZ,0,maxZ,0,255 ));
+			stroke(map(lineZ,0,maxZ,0,100 ));
 			line(element1.location.x,element1.location.y,element1.location.z,element2.location.x,element2.location.y,element2.location.z);
 			
 			velocity1= PVector.sub(element1.location,element2.location);
