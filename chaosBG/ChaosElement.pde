@@ -63,12 +63,19 @@ class ChaosElement {
 		
 		if(that.pressedFrames > 100 && random(0,1) >0.9) that.pressedStart=frameCount;
 
-		if(mousePressed && that.mouseMoved >0 && random(0,1) > map(that.pressedFrames, 0, that.pressedFrames+10,0.1,1)) velocity.mult(-1);
+
+		velocity.mult(that.friction);
+		velocity.add(that.wind);
+
+		if(mousePressed && that.mouseMoved >0 && random(0,1) > map(that.pressedFrames, 0, that.pressedFrames+10,0.1,1)) {
+			velocity.mult(-0.5);
+			location.add(velocity);
+			velocity.mult(-2);
+		}
+		else location.add(velocity);
 //	wind.mult(force);
 	//	velocity.add(wind);
 		
-		velocity.mult(that.friction);
-	//	velocity.add(wind);
-		location.add(velocity);
+
 	}
 }

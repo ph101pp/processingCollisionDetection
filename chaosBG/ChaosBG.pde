@@ -59,7 +59,6 @@ void setup() {
 		elements.add(element);
 	}
 	collision = new Collision(that, elements, 50);
-    wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 }
 
 
@@ -77,6 +76,8 @@ void draw() {
 //	rotation ();
 	background(255);
 	count=0;
+
+    wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 	
 	if(frameCount% 30 == 0) wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 
@@ -87,7 +88,8 @@ void draw() {
 	else pressedFrames=0;
 	
 	
-	if(mouseMoved>0 && friction > 0.5) friction-=0.001;
+	if(mouseMoved<=0 && friction > 0.3) friction-=0.01;
+	else if(mouseMoved>0 && friction <= 0.9) friction+=0.01;
 	
 	collision.createCollisionMap();
 	

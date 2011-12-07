@@ -93,33 +93,34 @@ class Collision {
 		if(element.location.x < 0-border) {
 			element.location.x*=-1;
 //			element.velocity.x*=-1;
-			element.velocity.add(new PVector(0,force,0));
+//			element.velocity.add(new PVector(0,force/2,0));
 		}
 		else if(element.location.x > width+border) {
 			element.location.x= width+border-(element.location.x-width+border);
 //			element.velocity.x= width+border-(element.velocity.x-width+border);
-			element.velocity.add(new PVector(-force,0,0));
+//			element.velocity.add(new PVector(-force/2,0,0));
 		}
 		if(element.location.y < 0-border) {
 			element.location.y*=-1;
 //			element.velocity.y*=-1;
-			element.velocity.add(new PVector(0,force,0));
+//			element.velocity.add(new PVector(0,force/2,0));
 		}
 		else if(element.location.y > height+border) {
 			element.location.y= height+border-(element.location.y-height+border);
 //			element.velocity.y= height+border-(element.velocity.y-height+border);
-			element.velocity.add(new PVector(0,-force,0));
+//			element.velocity.add(new PVector(0,-force/2,0));
 		}
-		if(element.location.z > maxZ) {
-			element.location.z= maxZ-(element.location.z-maxZ);
-//			element.velocity.z= maxZ-(element.velocity.z-maxZ);
-			element.velocity.add(new PVector(0,0,-force));
-		}
-		else if(element.location.z < 0-border) {
+		if(element.location.z < 0-border) {
 			element.location.z*=-1;
 //			element.velocity.z*=-1;
-			element.velocity.add(new PVector(0,0,force));
+//			element.velocity.add(new PVector(0,0,force/2));
 		}
+		else if(element.location.z > maxZ) {
+			element.location.z= maxZ-(element.location.z-maxZ);
+//			element.velocity.z= maxZ-(element.velocity.z-maxZ);
+//			element.velocity.add(new PVector(0,0,-force/2));
+		}
+
 	}
 
 ///////////////////////////////////////////////////////////
