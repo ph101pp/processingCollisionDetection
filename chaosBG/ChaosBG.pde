@@ -88,7 +88,7 @@ void draw() {
 	else pressedFrames=0;
 	
 	
-	if(mouseMoved<=0 && friction > 0.3) friction-=0.01;
+	if(mouseMoved<=0 && friction > 0.0) friction-=0.005;
 	else if(mouseMoved>0 && friction <= 0.9) friction+=0.01;
 	
 	collision.createCollisionMap();

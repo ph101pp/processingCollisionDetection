@@ -48,7 +48,7 @@ class ChaosElement {
 		mouseDist= PVector.dist(new PVector(location.x,location.y),new PVector(that.dropX, that.dropY));
 
 
-		if(int(blobPosition[0]) > 0 || (mousePressed  && that.mouseMoved>0)|| drop) {
+		if((int(blobPosition[0]) > 0 || (mousePressed  && that.mouseMoved>0)|| drop) && that.friction>=0.7) {
 			if(mouseDist < 10*pressedFrames && mouseDist<radius) {
 				velocity1= PVector.sub(location,mouse);
 				velocity1.normalize();
@@ -56,10 +56,10 @@ class ChaosElement {
 				velocity1.limit(5);
 				velocity.add(velocity1);
 			}
+			if(mousePressed && that.mouseMoved >0 && mouseDist < 10*pressedFrames && mouseDist<radius) that.friction=0.7;
+			else if(mousePressed && that.mouseMoved >0) that.friction=0.9;
 		}
 
-		if(mousePressed && that.mouseMoved >0 && mouseDist < 10*pressedFrames && mouseDist<radius) that.friction=0.7;
-		else if(mousePressed && that.mouseMoved >0) that.friction=0.9;
 		
 		if(that.pressedFrames > 100 && random(0,1) >0.9) that.pressedStart=frameCount;
 
