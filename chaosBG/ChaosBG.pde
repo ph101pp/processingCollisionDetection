@@ -7,58 +7,55 @@ import fullscreen.*;
 import japplemenubar.*;
 import 			java.util.*;
 import damkjer.ocd.*;
-chaosBG			that;
+///////////////////////////////////////////////////////////
+chaosBG								that;
+FullScreen 							fullScreen;
+KinectTracker 						tracker;
 
-int 			elementCount = 6000;
-int 			depth = 10;
-ArrayList 		elements = new ArrayList<ChaosElement>();
+int 								elementCount = 6000;
+int 								depth = 10;
+ArrayList<CollisionElement> 		elements = new ArrayList();
 
-Collision		collision;
-FullScreen fullScreen;
-KinectTracker tracker;
 
-ChaosElement	element;
+CollisionDetection					collisionDetection;
+NewChaosElement						element;
 
-int 			count=0;
-int 			countInt=0;
-float 			rotation=0;
-float 			mouseRadius;
+int 								count=0;
+float 								mouseRadius;
 
-float	xmag, ymag, newXmag, newYmag, diff,
-		rotationX,rotationY,rotationZ;
-float 		dropX=0,
-			dropY=0;
+float 								dropX=0,
+									dropY=0;
 			
-float[]		blobPosition= new float[2];
+float[]								blobPosition= new float[2];
 
-PVector 	wind;
-float 		rand=0.1;
-PVector		mousePos=new PVector(mouseX,mouseY);
-float		mouseMoved;
-float		pressedStart,pressedFrames;
-float		friction=0.8;
+PVector 							wind;
+float 								rand=0.1;
+PVector								mousePos=new PVector(mouseX,mouseY);
+float								mouseMoved;
+float								pressedStart,pressedFrames;
+float								friction=0.8;
 
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1680,1080,P3D);
+	size(1680,1050,P3D);
 	background(255);
 	stroke(0);
-	frameRate(15);
+	frameRate(25);
 	noFill();
 	fullScreen = new FullScreen(this); 
-	fullScreen.enter(); 
+//	fullScreen.enter(); 
   	
- // 	tracker = new KinectTracker(this);
+// 	tracker = new KinectTracker(this);
 	
 
 //	Create Elements
 
 	for (int i=0; i<elementCount; i++) {
-		element=new ChaosElement(this);
+		element=new NewChaosElement(this);
 		elements.add(element);
 	}
-	collision = new Collision(that, elements, 50);
+	collisionDetection = new CollisionDetection(that, elements);
 }
 
 
@@ -66,45 +63,42 @@ void setup() {
 void draw() {
 	println(frameRate);
 	translate(0,0,depth);
-//	rotateX(mouseY*360/height);
-//	blobPosition=tracker.calculateBlobs();
-	pushMatrix();
-//	translate(-width/2,-height/2,(mouseX-width/2)*3);
-	rotation+=0.3;
-//	rotateY(rotation);
-//	rotateY(rotation);
-//	rotation ();
 	background(255);
 	count=0;
-
-    wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
+	environmentInfo();
 	
-	if(frameCount% 30 == 0) wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
 
+//	Wind
+//	if(frameCount% 30 == 0) wind = new PVector(random(-rand,rand),random(-rand,rand), random(-rand,rand));
+	
+//	friction
+	if(mouseMoved<=0 && friction > 0.0) friction-=0.005;
+	else if(mouseMoved>0 && friction <= 0.9) friction+=0.01;
+	collisionDetection.mapElements();
+//	Collision
+	Iterator itr = elements.iterator(); 
+	while(itr.hasNext()) {
+		element= (NewChaosElement)itr.next();
+		collisionDetection.testElement(element);
+	//	element.velocity= new PVector(0,0,0);
+	}
+
+//	Move!
+	Iterator itr2 = elements.iterator(); 
+	while(itr2.hasNext()) {
+		element= (NewChaosElement)itr2.next();
+		element.move();
+		element.frameCollision();
+	}
+
+//	camera1.feed();
+}
+///////////////////////////////////////////////////////////
+void environmentInfo() {
 	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
+	mousePos=new PVector(mouseX,mouseY);
 	
 	if(!mousePressed) pressedStart=frameCount;
 	if(mousePressed) pressedFrames=frameCount-pressedStart;
 	else pressedFrames=0;
-	
-	
-	if(mouseMoved<=0 && friction > 0.0) friction-=0.005;
-	else if(mouseMoved>0 && friction <= 0.9) friction+=0.01;
-	
-	collision.createCollisionMap();
-	
-	Iterator itr = elements.iterator(); 
-	while(itr.hasNext()) {
-		element= (ChaosElement)itr.next();
-		collision.test(element);
-		element.move();
-		collision.testFrame(element);
-	//	element.velocity= new PVector(0,0,0);
-	}
-	
-	
-//	noLoop();
-//	camera1.feed();
-	popMatrix();
-	mousePos=new PVector(mouseX,mouseY);
 }
