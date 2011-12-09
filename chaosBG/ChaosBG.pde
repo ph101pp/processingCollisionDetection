@@ -50,10 +50,10 @@ void setup() {
 	
 	background(255);
 	stroke(0);
-	frameRate(10);
+	frameRate(25);
 	noFill();
 	fullScreen = new FullScreen(this); 
-	fullScreen.enter(); 
+//	fullScreen.enter(); 
   	
  //	tracker = new KinectTracker(this);
 	

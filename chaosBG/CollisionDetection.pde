@@ -90,6 +90,7 @@ class CollisionMap {
 	ArrayList<CollisionElement>[][] 	quadrants;
 
 	float 								gridSize; 
+	CollisionElement					testElement;
 ///////////////////////////////////////////////////////////
 	CollisionMap(chaosBG that_, CollisionDetection nextDetection_, float gridSize_) {
 		that=that_;
@@ -148,8 +149,11 @@ class CollisionMap {
 				for(int k=-1; k<=1; k++) 
 					if(y+k >=0 && y+k < quadrants[x+i].length && quadrants[x+i][y+k] != null) {
 						Iterator itr=quadrants[x+i][y+k].iterator();
-						while(itr.hasNext())
-							new Interaction(element, (CollisionElement) itr.next());
+						while(itr.hasNext()) {
+							testElement= (CollisionElement) itr.next();
+							element.collision(testElement, true);
+							testElement.collision(element, false);
+						}
 					}
 		nextDetection.addElement(element);
 	}
@@ -164,63 +168,36 @@ class CollisionMap {
 ///////////////////////////////////////////////////////////
 abstract class CollisionElement {
 	chaosBG								that;
-
 	PVector 							location = new PVector(0,0,0);
 	PVector								velocity = new PVector(0,0,0);
 	float 								actionRadius;
+
 ///////////////////////////////////////////////////////////
 	abstract void frameCollision();
 	abstract void move();
+	abstract void collide(NewChaosElement element, boolean mainCollision);
+	abstract void collide(MouseElement element, boolean mainCollision);
+	abstract void collide(CollisionElement element, boolean mainCollision);
 
 ///////////////////////////////////////////////////////////
+
 	void setActionRadius(float actionRadius_) {
 		actionRadius=actionRadius_;
 	}
 	
-	
-}
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-public class Interaction {
-
-	float							force=5;
-///////////////////////////////////////////////////////////
-	Interaction(CollisionElement element1, CollisionElement element2) {
-		PVector velocity1, velocity2;
-		float distance=PVector.dist(element1.location, element2.location);
-		if(distance > element1.actionRadius) return;
-	
-		if(distance < element1.actionRadius*0.9) {
-			float lineZ= abs((element1.location.z-element2.location.z)/2);
-			
-			stroke(map(lineZ,0,30,0,100 ));
-			line(element1.location.x,element1.location.y,element1.location.z,element2.location.x,element2.location.y,element2.location.z);
-			
-			velocity1= PVector.sub(element1.location,element2.location);
-			velocity2= PVector.sub(element2.location,element1.location);
-		}
-		else {
-			velocity1= PVector.sub(element2.location,element1.location);
-			velocity2= PVector.sub(element1.location,element2.location);
-		}
-		velocity1.normalize();
-		velocity1.mult(map(distance, 0,element1.actionRadius,force,0));		
-		velocity2.normalize();
-		velocity2.mult(map(distance, 0,element1.actionRadius,force,0));		
+	void collision(CollisionElement element, boolean mainCollision) {
+		String type=element.getClass().getName();
 		
-	
-	//	element1.location.add(velocity1);
-		element1.velocity.add(velocity1);
-		element2.velocity.add(velocity2);
-
-//		println(element1.velocity);
-
+		if(type == "chaosBG$NewChaosElement") collide((NewChaosElement) element, mainCollision);
+		if(type == "chaosBG$MouseElement") collide((MouseElement) element, mainCollision);
+		else collide((CollisionElement) element, mainCollision);
 	}
-	
 }
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////

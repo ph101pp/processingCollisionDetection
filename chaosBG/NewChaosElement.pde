@@ -7,6 +7,7 @@ class NewChaosElement extends CollisionElement {
 	float							radius=200;
 	boolean 						drop =false;
 	float							pressed;
+	float							force=5;
 ///////////////////////////////////////////////////////////
 	NewChaosElement(chaosBG that_, float actionRadius_) {
 		that=that_;
@@ -18,6 +19,37 @@ class NewChaosElement extends CollisionElement {
 		actionRadius=defaultRadius;
 		location = new PVector (random(width), random(height),random(that.depth));
 	}
+	
+///////////////////////////////////////////////////////////
+	void collide (NewChaosElement element, boolean mainCollision) {
+		PVector newVelocity;
+		float distance=PVector.dist(location, element.location);
+		if(distance > actionRadius) return;
+	
+		if(distance < actionRadius*0.9) {
+			newVelocity= PVector.sub(location,element.location);
+		
+			if(mainCollision) {
+				float lineZ= abs((location.z-element.location.z)/2);
+				stroke(map(lineZ,0,30,0,100 ));
+				line(location.x,location.y,location.z,element.location.x,element.location.y,element.location.z);
+			}			
+		}
+		else {
+			newVelocity= PVector.sub(element.location,location);
+		}
+		newVelocity.normalize();
+		newVelocity.mult(map(distance, 0,actionRadius,force,0));		
+		
+	
+		velocity.add(newVelocity);
+
+//		println(element1.velocity);
+	}
+///////////////////////////////////////////////////////////
+	void collide(MouseElement element, boolean mainCollision) {
+	}
+	void collide(CollisionElement element, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	void frameCollision() {
 		float border =  30;
