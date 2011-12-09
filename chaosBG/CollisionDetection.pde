@@ -51,7 +51,7 @@ class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	void mapElements() {
-		if(nextDetection.mapSize() == elements.size()) {
+		if(false && nextDetection.mapSize() == elements.size()) {
 			maps=(ArrayList<CollisionMap>)nextDetection.maps.clone();		
 		}
 		else {
@@ -170,6 +170,7 @@ abstract class CollisionElement {
 	float 								actionRadius;
 ///////////////////////////////////////////////////////////
 	abstract void frameCollision();
+	abstract void move();
 
 ///////////////////////////////////////////////////////////
 	void setActionRadius(float actionRadius_) {
