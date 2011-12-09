@@ -14,7 +14,7 @@ KinectTracker 						tracker;
 
 int 								elementCount = 6000;
 int 								depth = 10;
-ArrayList<CollisionElement> 		elements = new ArrayList();
+ArrayList<CollisionElement> 		collisionElements = new ArrayList();
 
 
 CollisionDetection					collisionDetection;
@@ -39,6 +39,9 @@ float[]								blobs = {0,0};
 
 boolean								blobPressed=false;
 float								blobMoved=10;
+MouseElement						mouseElement=null;
+
+boolean								disturbance=false;
 
 ///////////////////////////////////////////////////////////
 void setup() {
@@ -50,7 +53,7 @@ void setup() {
 	
 	background(255);
 	stroke(0);
-	frameRate(25);
+	frameRate(15);
 	noFill();
 	fullScreen = new FullScreen(this); 
 //	fullScreen.enter(); 
@@ -62,9 +65,9 @@ void setup() {
 
 	for (int i=0; i<elementCount; i++) {
 		element=new NewChaosElement(this);
-		elements.add(element);
+		collisionElements.add(element);
 	}
-	collisionDetection = new CollisionDetection(that, elements);
+	collisionDetection = new CollisionDetection(that, collisionElements);
 }
 
 
@@ -84,16 +87,29 @@ void draw() {
 	if(true) if(mouseMoved<=0 && friction > 0.0) friction-=0.005;
 	else if(mouseMoved>0 && friction <= 0.9) friction+=0.01;
 
+	if(mousePressed && mouseElement==null) {
+		mouseElement =new MouseElement(that);
+		collisionDetection.addElement(mouseElement);
+	}
+	else if(mousePressed && mouseElement != null) {
+		mouseElement.move();
+	}
+	else if(!mousePressed && mouseElement != null) {
+		collisionDetection.elements.remove(mouseElement);
+		mouseElement = null;
+	}
+	
 	collisionDetection.mapElements();
+	
 //	Collision
-	Iterator itr = elements.iterator(); 
+	Iterator itr = collisionElements.iterator(); 
 	while(itr.hasNext()) {
 		element= (CollisionElement)itr.next();
 		collisionDetection.testElement(element);
 	}
 
 //	Move!
-	Iterator itr2 = elements.iterator(); 
+	Iterator itr2 = collisionElements.iterator(); 
 	while(itr2.hasNext()) {
 		element= (CollisionElement)itr2.next();
 		element.move();
@@ -104,10 +120,6 @@ void draw() {
 void environmentInfo() {
 //	Mouse
 	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
-	mousePos=new PVector(mouseX,mouseY);
-	if(!mousePressed) pressedStart=frameCount;
-	if(mousePressed) pressedFrames=frameCount-pressedStart;
-	else pressedFrames=0;
 
 // Blob
 	blobPressed = (int(blobs[0]) > 0 && int(blobs[1]) > 0);

@@ -10,7 +10,7 @@ class CollisionDetection {
 ///////////////////////////////////////////////////////////
 	CollisionDetection(chaosBG that_,ArrayList<CollisionElement> elements_) {
 		that=that_;
-		elements=elements_;
+		elements=(ArrayList<CollisionElement>) elements_.clone();
 		nextDetection= new CollisionDetection(that, true);
 	}
 	CollisionDetection(chaosBG that_) {
@@ -23,7 +23,7 @@ class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	void addElement (CollisionElement element) {
-		elements.add(element);
+		this.elements.add(element);
 		addToMap(element);
 	}
 ///////////////////////////////////////////////////////////
@@ -51,10 +51,11 @@ class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	void mapElements() {
-		if(false && nextDetection.mapSize() == elements.size()) {
+		if(nextDetection.mapSize() == elements.size()) {
 			maps=(ArrayList<CollisionMap>)nextDetection.maps.clone();		
 		}
 		else {
+			maps=new ArrayList();
 			Iterator itr= elements.iterator();
 			while(itr.hasNext()) {
 				element = (CollisionElement) itr.next();
@@ -71,9 +72,13 @@ class CollisionDetection {
 			map=(CollisionMap) itr.next();
 			map.test(element);
 		}
+		nextDetection.addElement(element);
 	}
 ///////////////////////////////////////////////////////////
-	void removeElement (CollisionElement element) {}
+	void removeElement (CollisionElement element) {
+		elements.remove(element);
+		mapElements();
+	}
 }
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
@@ -155,7 +160,6 @@ class CollisionMap {
 							testElement.collision(element, false);
 						}
 					}
-		nextDetection.addElement(element);
 	}
 }
 ///////////////////////////////////////////////////////////

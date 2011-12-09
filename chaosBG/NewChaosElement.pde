@@ -8,6 +8,8 @@ class NewChaosElement extends CollisionElement {
 	boolean 						drop =false;
 	float							pressed;
 	float							force=5;
+	
+	int								disturbance=0;
 ///////////////////////////////////////////////////////////
 	NewChaosElement(chaosBG that_, float actionRadius_) {
 		that=that_;
@@ -48,6 +50,20 @@ class NewChaosElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void collide(MouseElement element, boolean mainCollision) {
+		PVector newVelocity;
+		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
+		int pressedFrames = frameCount-element.startFrame;
+		
+		if(element.moved >0 && (distance<element.actionRadius)) {
+			newVelocity= PVector.sub(location,element.location);
+			newVelocity.normalize();
+			newVelocity.mult(0.5*pressedFrames);
+			newVelocity.limit(5);
+			velocity.add(newVelocity);
+		}
+		
+		
+	
 	}
 	void collide(CollisionElement element, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
@@ -86,17 +102,33 @@ class NewChaosElement extends CollisionElement {
 	}	
 ///////////////////////////////////////////////////////////
 	void move() {	
+
+		velocity.mult(that.friction);
+
+		if(that.disturbance) {
+			float mult=-0.06;
+			velocity.mult(mult);
+			location.add(velocity);
+			velocity.mult(1/mult);
+			disturbance=0;
+		}
+		else {
+			location.add(velocity);
+		}
+
+		if(true) return;
+
 		float force=1;//(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
 		if(int(that.blobs[0]) > 0 && int(that.blobs[1]) > 0) {
 			that.dropX=map(that.blobs[0],0,640,0,width);
 			that.dropY=map(that.blobs[1],0,480,0,height);
 			radius=200;
 			pressed=blobFrames;
-			    pushMatrix();
-    	translate(that.dropX,that.dropY);
-    	fill(255,0,0);
-    	box(10);
-    	noFill();
+			pushMatrix();
+				translate(that.dropX,that.dropY);
+				fill(255,0,0);
+				box(10);
+				noFill();
    			 popMatrix();
 
 		}
@@ -113,27 +145,11 @@ class NewChaosElement extends CollisionElement {
 			drop=false;
 		}
 //		else radius=0;
-		PVector mouse=new PVector(that.dropX, that.dropY,0);
-		float mouseDist= PVector.dist(new PVector(location.x,location.y),new PVector(that.dropX, that.dropY));
-
 
 		if(((int(that.blobs[0]) > 0 && int(that.blobs[1]) > 0) || (mousePressed  && that.mouseMoved>0)|| drop) && that.friction>=0.7) {
-			if((mouseDist < 10*pressed && mouseDist<radius)) {
-				PVector velocity1= PVector.sub(location,mouse);
-				velocity1.normalize();
-				velocity1.mult(0.5*pressed);
-				velocity1.limit(5);
-				velocity.add(velocity1);
-			}
-			if(mousePressed && that.mouseMoved >0 && mouseDist < 10*pressed && mouseDist<radius) that.friction=0.7;
-			else if(mousePressed && that.mouseMoved >0) that.friction=0.9;
-
-			if(blobPressed && that.blobMoved >0 && mouseDist < 10*pressed && mouseDist<radius) that.friction=0.7;
-			else if(blobPressed && that.blobMoved >0) that.friction=0.9;
 		}
 
 		
-		if(that.pressedFrames > 100 && random(0,1) >0.9) that.pressedStart=frameCount;
 		if(that.blobFrames > 100 && random(0,1) >0.9) that.blobStart=frameCount;
 
 
