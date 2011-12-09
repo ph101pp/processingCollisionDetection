@@ -1,12 +1,10 @@
 class MouseElement extends CollisionElement {
 	float 							defaultRadius=200;
 
-	PVector							velocity1;
-	int								lineCount=0;
-	float							radius=200;
-	boolean 						drop =false;
+	float							friction=1;
 	
 	int								startFrame;
+	
 	float							moved;
 ///////////////////////////////////////////////////////////
 	MouseElement(chaosBG that_, float actionRadius_) {

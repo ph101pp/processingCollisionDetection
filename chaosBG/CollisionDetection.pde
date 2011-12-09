@@ -181,7 +181,6 @@ abstract class CollisionElement {
 	abstract void move();
 	abstract void collide(NewChaosElement element, boolean mainCollision);
 	abstract void collide(MouseElement element, boolean mainCollision);
-	abstract void collide(CollisionElement element, boolean mainCollision);
 
 ///////////////////////////////////////////////////////////
 
@@ -194,7 +193,6 @@ abstract class CollisionElement {
 		
 		if(type == "chaosBG$NewChaosElement") collide((NewChaosElement) element, mainCollision);
 		if(type == "chaosBG$MouseElement") collide((MouseElement) element, mainCollision);
-		else collide((CollisionElement) element, mainCollision);
 	}
 }
 ///////////////////////////////////////////////////////////

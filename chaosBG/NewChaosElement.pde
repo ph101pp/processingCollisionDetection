@@ -3,11 +3,9 @@ class NewChaosElement extends CollisionElement {
 
 	float 							defaultRadius=50;
 
-	int								lineCount=0;
-	float							radius=200;
-	boolean 						drop =false;
-	float							pressed;
-	float							force=5;
+	float							friction=1;
+	
+	float							pushForce=5;
 	
 	int								disturbance=0;
 ///////////////////////////////////////////////////////////
@@ -41,7 +39,7 @@ class NewChaosElement extends CollisionElement {
 			newVelocity= PVector.sub(element.location,location);
 		}
 		newVelocity.normalize();
-		newVelocity.mult(map(distance, 0,actionRadius,force,0));		
+		newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
 		
 	
 		velocity.add(newVelocity);
@@ -50,22 +48,41 @@ class NewChaosElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void collide(MouseElement element, boolean mainCollision) {
-		PVector newVelocity;
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
-		int pressedFrames = frameCount-element.startFrame;
 		
-		if(element.moved >0 && (distance<element.actionRadius)) {
-			newVelocity= PVector.sub(location,element.location);
-			newVelocity.normalize();
-			newVelocity.mult(0.5*pressedFrames);
-			newVelocity.limit(5);
-			velocity.add(newVelocity);
+		if(element.moved <=0 || distance>element.actionRadius) return;
+		
+		int pressedFrames = frameCount-element.startFrame;
+
+		PVector newVelocity= PVector.sub(location,element.location);
+		newVelocity.normalize();
+		newVelocity.mult(0.5*pressedFrames);
+		newVelocity.limit(5);
+		
+		velocity.add(newVelocity);
+		
+		friction=0.7;
+		disturbance=int(random(0,2));
+	}
+///////////////////////////////////////////////////////////
+	void move() {	
+  		velocity.mult(that.globalFriction);
+		velocity.mult(friction);
+
+		if(that.globalDisturbance > 0 || disturbance>0) {
+			float mult=-0.06;
+			velocity.mult(mult);
+			location.add(velocity);
+			velocity.mult(1/mult);
+			
+		}
+		else {
+			location.add(velocity);
 		}
 		
-		
-	
+		friction=1;
+		disturbance--;
 	}
-	void collide(CollisionElement element, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	void frameCollision() {
 		float border =  30;
@@ -100,74 +117,5 @@ class NewChaosElement extends CollisionElement {
 	//			element.velocity.add(new PVector(0,0,-force/2));
 		}
 	}	
-///////////////////////////////////////////////////////////
-	void move() {	
-
-		velocity.mult(that.friction);
-
-		if(that.disturbance) {
-			float mult=-0.06;
-			velocity.mult(mult);
-			location.add(velocity);
-			velocity.mult(1/mult);
-			disturbance=0;
-		}
-		else {
-			location.add(velocity);
-		}
-
-		if(true) return;
-
-		float force=1;//(1-(PVector.dist(element1.location, new PVector(width/2,height/2,element1.location.z))/(height/2)))*0.2;
-		if(int(that.blobs[0]) > 0 && int(that.blobs[1]) > 0) {
-			that.dropX=map(that.blobs[0],0,640,0,width);
-			that.dropY=map(that.blobs[1],0,480,0,height);
-			radius=200;
-			pressed=blobFrames;
-			pushMatrix();
-				translate(that.dropX,that.dropY);
-				fill(255,0,0);
-				box(10);
-				noFill();
-   			 popMatrix();
-
-		}
-		else if(mousePressed && that.mouseMoved>0) {
-			that.dropX=mouseX;
-			that.dropY=mouseY;
-			radius=int(map(width*height, 0,1680*1050 ,0, 200));;
-			pressed=pressedFrames;
-		}
-		else if(frameCount% 10 == 0 && true) {
-			that.dropX=random(width);
-			that.dropY=random(height);
-			radius = random(height/5);
-			drop=false;
-		}
-//		else radius=0;
-
-		if(((int(that.blobs[0]) > 0 && int(that.blobs[1]) > 0) || (mousePressed  && that.mouseMoved>0)|| drop) && that.friction>=0.7) {
-		}
-
-		
-		if(that.blobFrames > 100 && random(0,1) >0.9) that.blobStart=frameCount;
-
-
-		velocity.mult(that.friction);
-//		velocity.add(that.wind);
-
-		if(mousePressed && that.mouseMoved >0 && random(0,1) > map(that.pressedFrames, 0, that.pressedFrames+20,0.1,1)) {
-			float mult=-0.06;
-			velocity.mult(mult);
-			location.add(velocity);
-			velocity.mult(1/mult);
-		}
-		else location.add(velocity);
-//	wind.mult(force);
-	//	velocity.add(wind);
-	}
-	
-	
-	
 }
 
