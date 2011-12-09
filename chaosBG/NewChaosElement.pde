@@ -71,7 +71,7 @@ class NewChaosElement extends CollisionElement {
 		else if(mousePressed && that.mouseMoved>0) {
 			that.dropX=mouseX;
 			that.dropY=mouseY;
-			radius=200;
+			radius=int(map(width*height, 0,1680*1050 ,0, 200));;
 			pressed=pressedFrames;
 		}
 		else if(frameCount% 10 == 0 && true) {
@@ -108,10 +108,11 @@ class NewChaosElement extends CollisionElement {
 		velocity.mult(that.friction);
 //		velocity.add(that.wind);
 
-		if(mousePressed && that.mouseMoved >0 && random(0,1) > map(that.pressedFrames, 0, that.pressedFrames+10,0.1,1)) {
-			velocity.mult(-0.5);
+		if(mousePressed && that.mouseMoved >0 && random(0,1) > map(that.pressedFrames, 0, that.pressedFrames+20,0.1,1)) {
+			float mult=-0.06;
+			velocity.mult(mult);
 			location.add(velocity);
-			velocity.mult(-2);
+			velocity.mult(1/mult);
 		}
 		else location.add(velocity);
 //	wind.mult(force);
