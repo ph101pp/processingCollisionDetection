@@ -93,21 +93,27 @@ class CollisionMap {
 	CollisionDetection					nextDetection;
 
 	ArrayList<CollisionElement>[][] 	quadrants;
+	int									columns;
+	int									rows;
 
 	float 								gridSize; 
 	CollisionElement					testElement;
+///////////////////////////////////////////////////////////
+	int									x,y,x1,y1,x2,y2;
+	PVector								quadrant,quadrant1,quadrant2,radius;
+
 ///////////////////////////////////////////////////////////
 	CollisionMap(chaosBG that_, CollisionDetection nextDetection_, float gridSize_) {
 		that=that_;
 		nextDetection=nextDetection_;
 		gridSize=gridSize_;
-		int quadrantsX=int(ceil(width/gridSize))+2;
-		int quadrantsY=int(ceil(height/gridSize))+2;
-    	quadrants= (ArrayList<CollisionElement>[][]) new ArrayList[quadrantsX][quadrantsY]; 
+		columns=int(ceil(width/gridSize))+2;
+		rows=int(ceil(height/gridSize))+2;
+    	quadrants= (ArrayList<CollisionElement>[][]) new ArrayList[columns][rows]; 
 	}
 ///////////////////////////////////////////////////////////
 	void add(CollisionElement element) {	
-		PVector quadrant = getQuadrant(element);
+		PVector quadrant = getQuadrant(element.location);
 		int x= int(quadrant.x);
 		int y= int(quadrant.y);
 		
@@ -115,9 +121,9 @@ class CollisionMap {
 		quadrants[x][y].add(element);
 	}
 ///////////////////////////////////////////////////////////
-	private PVector getQuadrant(CollisionElement element) {
-		int x = 1+int(floor(element.location.x/gridSize));
-		int y = 1+int(floor(element.location.y/gridSize));
+	PVector getQuadrant(PVector location) {
+		int x = 1+int(floor(location.x/gridSize));
+		int y = 1+int(floor(location.y/gridSize));
 		
 		if(x < 1) x=0;
 		if(x > int(ceil(width/gridSize))) x=int(ceil(width/gridSize))+1;
@@ -137,27 +143,40 @@ class CollisionMap {
 	}
 ///////////////////////////////////////////////////////////
 	void test(CollisionElement element) {
-		PVector quadrant = getQuadrant(element);		
-		int x= int(quadrant.x);
-		int y= int(quadrant.y);
+		quadrant = getQuadrant(element.location);		
+		x= int(quadrant.x);
+		y= int(quadrant.y);
+		x1= x-1;
+		y1= y-1;
+		x2= x+1;
+		y2= y+1;
+		if(element.actionRadius > gridSize) {
+			radius = new PVector(element.actionRadius, element.actionRadius);
+			quadrant1 = getQuadrant(PVector.sub(element.location, radius));		
+			quadrant2 = getQuadrant(PVector.add(element.location, radius));		
 		
-//		println("testCollison");
-		
-		if(x == 0 || x == int(ceil(width/gridSize))+2 || y ==0 || y==int(ceil(height/gridSize))+2) 
+			x1= int(quadrant1.x)-1;
+			y1= int(quadrant1.y)-1;
+			x2= int(quadrant2.x)+1;
+			y2= int(quadrant2.y)+1;
+		}
+
+		if(quadrants[x][y] != null && quadrants[x][y].contains(element))
+			quadrants[x][y].remove(element);
+				
+		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
 			element.frameCollision();
 		
-		if(quadrants[x][y] != null)
-			quadrants[x][y].remove(element);
-		
-		for(int i=1; i>=-1; i--) 
-			if(x+i >=0 && x+i < quadrants.length)
-				for(int k=-1; k<=1; k++) 
-					if(y+k >=0 && y+k < quadrants[x+i].length && quadrants[x+i][y+k] != null) {
-						Iterator itr=quadrants[x+i][y+k].iterator();
+		for(int i=x1; i<=x2; i++) 
+			if(i >=0 && i < quadrants.length)
+				for(int k=y1; k<=y2; k++) 
+					if(k >=0 && k < quadrants[i].length && quadrants[i][k] != null) {
+						Iterator itr=quadrants[i][k].iterator();
 						while(itr.hasNext()) {
 							testElement= (CollisionElement) itr.next();
-							element.collision(testElement, true);
-							testElement.collision(element, false);
+							if(element.equals(testElement)) continue;
+							element.collision(testElement, this, true);
+							testElement.collision(element, this,false);
 						}
 					}
 	}
@@ -179,21 +198,23 @@ abstract class CollisionElement {
 ///////////////////////////////////////////////////////////
 	abstract void frameCollision();
 	abstract void move();
-	abstract void collide(NewChaosElement element, boolean mainCollision);
-	abstract void collide(MouseElement element, boolean mainCollision);
+	abstract void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision);
+	
 
 ///////////////////////////////////////////////////////////
-
 	void setActionRadius(float actionRadius_) {
 		actionRadius=actionRadius_;
 	}
 	
-	void collision(CollisionElement element, boolean mainCollision) {
+	void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		String type=element.getClass().getName();
 		
-		if(type == "chaosBG$NewChaosElement") collide((NewChaosElement) element, mainCollision);
-		if(type == "chaosBG$MouseElement") collide((MouseElement) element, mainCollision);
-	}
+		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);
+		if(type == "chaosBG$MouseElement") 		collide((MouseElement) element, collisionMap, mainCollision);
+		if(type == "chaosBG$LorenzElement") 	collide((LorenzElement) element, collisionMap, mainCollision);
+	}	
 }
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////

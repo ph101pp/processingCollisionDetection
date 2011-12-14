@@ -8,7 +8,11 @@ class NewChaosElement extends CollisionElement {
 	float							pushForce=5;
 	
 	int								disturbance=0;
-///////////////////////////////////////////////////////////
+	
+	LorenzElement					lorenz=null;
+	
+	NewChaosElement 				element1, element2;
+	///////////////////////////////////////////////////////////
 	NewChaosElement(chaosBG that_, float actionRadius_) {
 		that=that_;
 		actionRadius=actionRadius_;
@@ -21,11 +25,18 @@ class NewChaosElement extends CollisionElement {
 	}
 	
 ///////////////////////////////////////////////////////////
-	void collide (NewChaosElement element, boolean mainCollision) {
+	void collide (NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {
 		PVector newVelocity;
 		float distance=PVector.dist(location, element.location);
 		if(distance > actionRadius) return;
-	
+		if(lorenz!=null && !lorenz.allSet) {
+			int index = lorenz.elements.indexOf(this);
+			PVector pointLocation = new PVector(lorenz.points[index][0],lorenz.points[index][1],lorenz.points[index][2]);
+			pointLocation.mult(lorenz.zoom);
+			pointLocation.sub(lorenz.average);
+			pointLocation.add(lorenz.location);
+			if(PVector.dist(location, pointLocation)<=random(10, 20)) return;
+		}
 		if(distance < actionRadius*0.9) {
 			newVelocity= PVector.sub(location,element.location);
 		
@@ -40,17 +51,16 @@ class NewChaosElement extends CollisionElement {
 		}
 		newVelocity.normalize();
 		newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
-		
-	
+			
 		velocity.add(newVelocity);
-
+		
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	void collide(MouseElement element, boolean mainCollision) {
+	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		
-		if(element.moved <=0 || distance>element.actionRadius) return;
+		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8) return;
 		
 		int pressedFrames = frameCount-element.startFrame;
 
@@ -65,7 +75,77 @@ class NewChaosElement extends CollisionElement {
 		disturbance=int(random(0,2));
 	}
 ///////////////////////////////////////////////////////////
+	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {
+		if(!element.allSet) {
+			if(element.elements.contains(this)) lorenz= element;	
+			return;
+		}
+			
+		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
+		
+		if(distance>element.actionRadius) return;
+		
+		PVector newVelocity= PVector.sub(location,element.location);
+		newVelocity.normalize();
+		newVelocity.mult(5);
+		
+		velocity.add(newVelocity);
+		
+		friction=0.7;
+		disturbance=int(random(0,2));
+		return;
+	}
+///////////////////////////////////////////////////////////
 	void move() {	
+		if(lorenz !=null) {
+  			int index = lorenz.elements.indexOf(this);
+			if(!lorenz.allSet && index<=lorenz.count) {
+				moveLorenz(index);
+				return;
+			}
+		}
+		moveNormal();
+	}
+///////////////////////////////////////////////////////////
+	void moveLorenz(int index){
+		PVector pointLocation = new PVector(lorenz.points[index][0],lorenz.points[index][1],lorenz.points[index][2]);
+		pointLocation.mult(lorenz.zoom);
+		pointLocation.sub(lorenz.average);
+		pointLocation.add(lorenz.location);
+		
+		velocity= PVector.sub(pointLocation, location);
+		
+		velocity.mult(0.1);
+	//	stroke(255,0,0);
+		if(velocity.mag() <=1) {
+			if(index-1 >=0 && index+2 < lorenz.elements.size()) {
+				element =(NewChaosElement) lorenz.elements.get(index-1);
+				element1 =(NewChaosElement) lorenz.elements.get(index+1);
+				element2 =(NewChaosElement) lorenz.elements.get(index+2);
+				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
+				//curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
+			
+			}
+			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
+				element =(NewChaosElement) lorenz.elements.get(index+1);
+				element1 =(NewChaosElement) lorenz.elements.get(index-1);
+				element2 =(NewChaosElement) lorenz.elements.get(index-2);
+				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
+//				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
+			
+			}
+		}
+		stroke(0);
+		
+	
+		if(PVector.dist(pointLocation, location) <=1) location = pointLocation;
+		else {
+			location.add(velocity);
+			lorenz.moved=true;
+		}
+	}
+///////////////////////////////////////////////////////////
+	void moveNormal() {
   		velocity.mult(that.globalFriction);
 		velocity.mult(friction);
 
@@ -84,38 +164,7 @@ class NewChaosElement extends CollisionElement {
 		disturbance--;
 	}
 ///////////////////////////////////////////////////////////
-	void frameCollision() {
-		float border =  30;
-		if(location.x < 0-border) {
-			location.x*=-1;
-	//			element.velocity.x*=-1;
-	//			element.velocity.add(new PVector(0,force/2,0));
-		}
-		else if(location.x > width+border) {
-			location.x= width+border-(location.x-width+border);
-	//			element.velocity.x= width+border-(element.velocity.x-width+border);
-	//			element.velocity.add(new PVector(-force/2,0,0));
-		}
-		if(location.y < 0-border) {
-			location.y*=-1;
-	//			element.velocity.y*=-1;
-	//			element.velocity.add(new PVector(0,force/2,0));
-		}
-		else if(location.y > height+border) {
-			location.y= height+border-(location.y-height+border);
-	//			element.velocity.y= height+border-(element.velocity.y-height+border);
-	//			element.velocity.add(new PVector(0,-force/2,0));
-		}
-		if(location.z < 0-border) {
-			location.z*=-1;
-	//			element.velocity.z*=-1;
-	//			element.velocity.add(new PVector(0,0,force/2));
-		}
-		else if(location.z > depth) {
-			location.z= depth-(location.z-depth);
-	//			element.velocity.z= maxZ-(element.velocity.z-maxZ);
-	//			element.velocity.add(new PVector(0,0,-force/2));
-		}
-	}	
+	void frameCollision() {}
+///////////////////////////////////////////////////////////
 }
 

@@ -89,7 +89,6 @@ class KinectTracker {
            		count++;
         			
            }
-          endShape(CLOSE);
        }
        
       
