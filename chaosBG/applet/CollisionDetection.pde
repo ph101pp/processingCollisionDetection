@@ -199,8 +199,8 @@ abstract class CollisionElement {
 	abstract void frameCollision();
 	abstract void move();
 	abstract void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision);
-	abstract void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision);
 	abstract void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision);
 	
 
 ///////////////////////////////////////////////////////////
@@ -212,8 +212,8 @@ abstract class CollisionElement {
 		String type=element.getClass().getName();
 		
 		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$MouseElement") 		collide((MouseElement) element, collisionMap, mainCollision);
 		if(type == "chaosBG$LorenzElement") 	collide((LorenzElement) element, collisionMap, mainCollision);
+		if(type == "chaosBG$BlobElement") 		collide((BlobElement) element, collisionMap, mainCollision);
 	}	
 }
 ///////////////////////////////////////////////////////////

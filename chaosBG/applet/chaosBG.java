@@ -10,6 +10,7 @@ import fullscreen.*;
 import japplemenubar.*; 
 import java.util.*; 
 import damkjer.ocd.*; 
+import SimpleOpenNI.*; 
 
 import java.applet.*; 
 import java.awt.Dimension; 
@@ -27,6 +28,84 @@ import java.util.regex.*;
 
 public class chaosBG extends PApplet {
 
+class BlobElement extends CollisionElement {
+	float 							defaultRadius=180;
+
+	int								startFrame;
+	
+	float							moved;
+	
+	LorenzElement					lorenzElement;
+		
+	boolean							shapeSet;
+	
+//	PROGRAMM
+	PVector newLocation;
+///////////////////////////////////////////////////////////
+	BlobElement(chaosBG that_, PVector location_, float actionRadius_) {
+		that=that_;
+		actionRadius=actionRadius_;
+		location = location_;
+		startFrame=frameCount;
+
+		lorenzElement= new LorenzElement(that, location, this);
+	}
+	BlobElement(chaosBG that_, PVector location_) {
+		that=that_;
+		actionRadius=defaultRadius;
+		location = location_;
+		startFrame=frameCount;
+
+		lorenzElement= new LorenzElement(that, location,this);
+	}
+///////////////////////////////////////////////////////////
+	public void frameCollision() {}
+	public void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void move(){};
+///////////////////////////////////////////////////////////
+	
+	public void move(PVector newLocation) {
+		moved=PVector.dist(newLocation, location);
+		
+		if(moved>0) that.movement=true;
+		
+		if(frameCount-startFrame > 100 && random(0,1) >0.9f) startFrame=frameCount;
+
+		location = newLocation;
+		
+		if(lorenzElement.allSet == true) resetLorenzElement();
+	
+		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
+			startFrame=frameCount;
+			shapeSet=false;
+			lorenzElement.remove();
+		}
+		if(frameCount-startFrame> 50 && !shapeSet && moved>0 ) {
+			that.lorenzElements.add(lorenzElement);
+			that.collisionDetection.addElement(lorenzElement);
+			lorenzElement.location=new PVector(location.x,location.y, location.z);
+			lorenzElement.startFrame=frameCount;
+			lorenzElement.elements = new ArrayList();
+			shapeSet=true;
+		}
+		
+	}
+///////////////////////////////////////////////////////////
+	public void resetLorenzElement(){
+		shapeSet=false;
+		lorenzElement=new LorenzElement(that, location, this);
+	}
+///////////////////////////////////////////////////////////
+	public void finalize() {
+		if(lorenzElement.allSet) return;	
+		lorenzElement.remove();
+	}
+}
+
+
+
 
 
 
@@ -39,7 +118,6 @@ public class chaosBG extends PApplet {
 ///////////////////////////////////////////////////////////
 chaosBG								that;
 FullScreen 							fullScreen;
-KinectTracker 						tracker;
 
 ///////////
 int 								elementCount = 6000;
@@ -67,13 +145,16 @@ float[]								blobs = {0,0};
 
 boolean								blobPressed=false;
 float								blobMoved=10;
-MouseElement						mouseElement=null;
+BlobElement						mouseElement=null;
 
+///////////////////////////////////////////////////////////
+KinectListener      				kinectListener;
 
 ///////////////////////////////////////////////////////////
 public void setup() {
 	that = this;
-	size(1280,970,P3D);
+//	size(1280,1024,P3D);
+	size(1680,1050,P3D);
 	background(255);
 	stroke(0);
 	frameRate(25);
@@ -82,9 +163,13 @@ public void setup() {
 	elementCount=PApplet.parseInt(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=PApplet.parseInt(map(width*height, 0,1680*1050 ,0, depth));
 
-	if(kinect) tracker = new KinectTracker(this);
 	fullScreen = new FullScreen(this); 
-//	fullScreen.enter(); 
+
+	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
+
+
+
+
   	
 	
 
@@ -95,18 +180,18 @@ public void setup() {
 	}
 	collisionDetection = new CollisionDetection(that, elements);
 }
-
-
 ///////////////////////////////////////////////////////////
 public void draw() {
-	println(frameRate);
+//	println(frameRate);
 	translate(0,0,depth);
 	background(255);
-	if(kinect) blobs=tracker.calculateBlobs();
 	environment();
 	movement=false;
 	lorenzMovement=false;
-	mouseElement();
+	//Kinect
+	kinectListener.update();
+	
+	//mouseElement();
 	
 	collisionDetection.mapElements();
 	
@@ -115,7 +200,9 @@ public void draw() {
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
 		elementL= (LorenzElement) lorenzElements.get(i);
-		if(elementL.moved==false) elementL.allSet=true;
+		if(elementL.moved==false) {
+			elementL.allSet=true;
+		}
 		elementL.moved=false;
 		collisionDetection.testElement(elementL);
 		elementL.move();
@@ -141,12 +228,12 @@ public void draw() {
 ///////////////////////////////////////////////////////////
 public void mouseElement() {
 	if(mousePressed && mouseElement==null) {
-		mouseElement =new MouseElement(that);
+		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
 //		globalDisturbance=int(random(0,3));
 	}
 	else if(mousePressed && mouseElement != null) {
-		mouseElement.move();
+		mouseElement.move(new PVector(mouseX,mouseY));
 	}
 	else if(!mousePressed && mouseElement != null) {
 		mouseElement.finalize();
@@ -156,14 +243,14 @@ public void mouseElement() {
 }
 ///////////////////////////////////////////////////////////
 public void environment() {
-//	Mouse
+/*/	Mouse
 	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
 	mousePos=new PVector(mouseX,mouseY);
 	if(mouseMoved > 0) movement=true;
-
+*/
 //	friction
-	if(!movement && !lorenzMovement && globalFriction > 0.0f) globalFriction-=0.005f;
-	else if((movement || lorenzMovement) && ((globalFriction <= 0.85f && !lorenzMovement) || globalFriction <= 0.4f)) globalFriction+=0.08f;
+	if(!movement && (!lorenzMovement || globalFriction > 0.6f) && globalFriction > 0.0f) globalFriction-=0.005f;
+	else if((movement || lorenzMovement) && ((globalFriction <= 0.85f && !lorenzMovement) || globalFriction <= 0.75f)) globalFriction+=0.08f;
 
 // Blob
 	blobPressed = (PApplet.parseInt(blobs[0]) > 0 && PApplet.parseInt(blobs[1]) > 0);
@@ -209,9 +296,39 @@ public void frame(NewChaosElement element) {
 //			element.velocity.add(new PVector(0,0,-force/2));
 	}
 }	
-public void stop() {
-    that.tracker.kinect.quit();
-  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// session callbacks
+
+public void onStartSession(PVector pos)
+{
+  println("onStartSession: " + pos);
+}
+
+public void onEndSession()
+{
+  println("onEndSession: ");
+}
+
+public void onFocusSession(String strFocus,PVector pos,float progress)
+{
+  println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+public void keyPressed() {
+	switch(key)
+	{
+		case 'e':
+			// end sessions
+			kinectListener.endSession();
+		break;
+		
+		case ' ':
+			fullScreen.enter(); 
+		break;
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 class CollisionDetection {
 	chaosBG								that;
 	CollisionDetection					nextDetection;
@@ -413,8 +530,8 @@ abstract class CollisionElement {
 	public abstract void frameCollision();
 	public abstract void move();
 	public abstract void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision);
-	public abstract void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision);
 	public abstract void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision);
+	public abstract void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision);
 	
 
 ///////////////////////////////////////////////////////////
@@ -426,8 +543,8 @@ abstract class CollisionElement {
 		String type=element.getClass().getName();
 		
 		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$MouseElement") 		collide((MouseElement) element, collisionMap, mainCollision);
 		if(type == "chaosBG$LorenzElement") 	collide((LorenzElement) element, collisionMap, mainCollision);
+		if(type == "chaosBG$BlobElement") 		collide((BlobElement) element, collisionMap, mainCollision);
 	}	
 }
 ///////////////////////////////////////////////////////////
@@ -438,106 +555,10 @@ abstract class CollisionElement {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
-
-class KinectTracker {
- 	OpenCV opencv;
-	chaosBG that;
-	Kinect kinect;
-  // Size of kinect image
-  int kw = 640;
-  int kh = 480;
-  int threshold = 600;
-
-  // Raw location
-  PVector loc;
-
-  // Interpolated location
-  PVector lerpedLoc;
-
-  // Depth data
-  int[] depth;
-
-
-  PImage display;
-
-  KinectTracker(chaosBG that_) {
- 	that=that_;
-	opencv = new OpenCV(that);
-	opencv.allocate(kw, kh);
-  	kinect = new Kinect(that);
- 	kinect.start();
-    kinect.enableDepth(true);
-
-    // We could skip processing the grayscale image for efficiency
-    // but this example is just demonstrating everything
-    kinect.processDepthImage(true);
-
-    display = createImage(kw, kh, PConstants.RGB);
-  }
-
-  public void createDisplay() {
-    PImage img = kinect.getDepthImage();
-    depth = kinect.getRawDepth();
-
-    // Being overly cautious here
-    if (depth == null || img == null) return;
-
-    // Going to rewrite the depth image to show which pixels are in threshold
-    // A lot of this is redundant, but this is just for demonstration purposes
-    display.loadPixels();
-    for (int x = 0; x < kw; x++) {
-      for (int y = 0; y < kh; y++) {
-        // mirroring image
-        int offset = kw-x-1+y*kw;
-        // Raw depth
-        int rawDepth = depth[offset];
-
-        int pix = x+y*display.width;
-        if (rawDepth < threshold) {
-          // A red color instead
-          display.pixels[pix] = color(255);
-        } 
-        else {
-          display.pixels[pix] = color(0);
-        }
-      }
-    }
-    display.updatePixels();
-
-    // Draw the image
- //   image(display, 0, 0);
-  }
-
-
-
-  public float[] calculateBlobs() {
-  	float 	sumX=0,
-  			sumY=0;
-  	int		count=1;
-  
-    createDisplay();
-    opencv.copy(display);
-//   	image( opencv.image(), 640, 0 );
-    opencv.threshold( 80 );
-    Blob[] blobs = opencv.blobs( 10, width*height/2, 100, true, OpenCV.MAX_VERTICES*4 );
-	
-   // draw blob results
-        for( int i=0; i<blobs.length; i++ ) {
-           for( int j=0; j<blobs[i].points.length; j++ ) {
-           		sumX+=blobs[i].points[j].x;
-           		sumY+=blobs[i].points[j].y;
-           		count++;
-        			
-           }
-       }
-       
-      
-    float[] value = {sumX/count, sumY/count};
-    return value;
-  }
-}
 class LorenzElement extends CollisionElement {
-	float 							defaultRadius=200;
+	BlobElement						blob;
+
+	float 							defaultRadius=180;
 	int								variableSets=19;
 
 	float							pushForce=5;
@@ -548,7 +569,7 @@ class LorenzElement extends CollisionElement {
 	float[] 						variable= {-1.11f, 1.12f, 4.49f, 0.13f, 1.4f, 0.4f, 0.13f, 1.47f, 0.13f};
 	float[][] 						points;
 	PVector							average= new PVector(0,0,0);
-	float							zoom=35;
+	float							zoom=25;
 	float							rotation=0;
 	int								iterations=1000;
 	
@@ -559,9 +580,13 @@ class LorenzElement extends CollisionElement {
 	boolean							allSet=false;
 	int								count=0;	
 	boolean							moved=true;
+	
+	float							moveUp=0.8f;
+	
 ///////////////////////////////////////////////////////////
-	LorenzElement(chaosBG that_, PVector location_, float actionRadius_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_, float actionRadius_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=actionRadius_;
 		location = location_;
 		startFrame=frameCount;
@@ -569,8 +594,9 @@ class LorenzElement extends CollisionElement {
 		getVariableSet();
 		generatePoints();
 	}
-	LorenzElement(chaosBG that_, PVector location_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=defaultRadius;
 		location = location_;
 		startFrame=frameCount;
@@ -593,17 +619,12 @@ class LorenzElement extends CollisionElement {
 			return;
 		}
 		
-		PVector newVelocity= PVector.sub(element.location,location);
-		newVelocity.normalize();
-		newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
-			
-		velocity.add(newVelocity);
-		
 		
  	}
 ///////////////////////////////////////////////////////////
 	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+///////////////////////////////////////////////////////////
 	public void move() {
 		count = (frameCount-startFrame)*100;
 		if(count> iterations) count = iterations;
@@ -612,17 +633,35 @@ class LorenzElement extends CollisionElement {
 		
 		if(!allSet) return;
 		
-		draw();
+		velocity.limit(3);
 		
-//		velocity.y-=1;
+/*		velocity.limit(1);
+		velocity.limit(3);
+*/		
+		moveUp+=0.02f;
+		velocity.y-=moveUp;
 		
-		velocity.limit(5);
-		
+/*		float distance=PVector.dist(new PVector(location.x,location.y), that.mouseElement.location);
+		if(distance<=actionRadius && false) {
+			PVector newVelocity= PVector.sub(location,element.location);
+			newVelocity.normalize();
+			
+			pushForce=5;
+			newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
+			velocity.add(newVelocity);
+		}
+	
+*/	
+		velocity.mult(that.globalFriction);	
 		if(velocity.mag() >0) that.lorenzMovement=true;
 		
 		location.add(new PVector(velocity.x,velocity.y));
-		
-		if(location.y < -200) remove();
+	
+		if(location.y < -actionRadius) {
+			remove();
+			return;	
+		}
+		draw();
 	}
 	
 	public void remove(){
@@ -694,12 +733,12 @@ class LorenzElement extends CollisionElement {
 			stroke(0);
 			
 			translate(location.x, location.y,location.z);
-			rotation+=0.1f;
+			rotation+=0.05f;
 			rotateY(rotation);
-			box(10);
+//			box(10);
 			pushMatrix();			
 				translate(-average.x, -average.y,-average.z);
-				box(10);
+//				box(10);
 				beginShape();
 					for(int i=0; i< points.length; i++) {
 						x =points[i][0];
@@ -711,75 +750,6 @@ class LorenzElement extends CollisionElement {
 				endShape();
 			popMatrix();
 		popMatrix();
-	}
-}
-class MouseElement extends CollisionElement {
-	float 							defaultRadius=200;
-
-	int								startFrame;
-	
-	float							moved;
-	
-	LorenzElement					lorenzElement;
-		
-	boolean							shapeSet;
-	
-//	PROGRAMM
-	PVector newLocation;
-///////////////////////////////////////////////////////////
-	MouseElement(chaosBG that_, float actionRadius_) {
-		that=that_;
-		actionRadius=actionRadius_;
-		location = new PVector (mouseX, mouseY,0);
-		startFrame=frameCount;
-
-		lorenzElement= new LorenzElement(that, location);
-	}
-	MouseElement(chaosBG that_) {
-		that=that_;
-		actionRadius=defaultRadius;
-		location = new PVector (mouseX, mouseY,0);
-		startFrame=frameCount;
-
-		lorenzElement= new LorenzElement(that, location);
-	}
-///////////////////////////////////////////////////////////
-	public void frameCollision() {}
-	public void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-///////////////////////////////////////////////////////////
-	public void move() {
-		PVector newLocation =new PVector (mouseX, mouseY,0);
-		moved=PVector.dist(newLocation, location);
-		
-		if(moved>0) that.movement=true;
-		
-		if(frameCount-startFrame > 100 && random(0,1) >0.9f) startFrame=frameCount;
-
-		location = new PVector (mouseX, mouseY,0);
-	
-		
-		if(shapeSet && (moved<=0 || (PVector.dist(location, lorenzElement.location) > 80 && !lorenzElement.allSet))) {
-			startFrame=frameCount;
-			shapeSet=false;
-			lorenzElement.remove();
-		}
-		if(frameCount-startFrame> 50 && !shapeSet && moved>0 ) {
-			that.lorenzElements.add(lorenzElement);
-			that.collisionDetection.addElement(lorenzElement);
-			lorenzElement.location=new PVector(location.x,location.y, location.z);
-			lorenzElement.startFrame=frameCount;
-			lorenzElement.elements = new ArrayList();
-			shapeSet=true;
-		}
-		
-	}
-///////////////////////////////////////////////////////////
-	public void finalize() {
-		if(lorenzElement.allSet) return;
-	
-		lorenzElement.remove();
 	}
 }
 
@@ -819,7 +789,7 @@ class NewChaosElement extends CollisionElement {
 			pointLocation.mult(lorenz.zoom);
 			pointLocation.sub(lorenz.average);
 			pointLocation.add(lorenz.location);
-			if(PVector.dist(location, pointLocation)<=random(10, 20)) return;
+			if(PVector.dist(location, pointLocation)<=random(5, 15)) return;
 		}
 		if(distance < actionRadius*0.9f) {
 			newVelocity= PVector.sub(location,element.location);
@@ -841,7 +811,7 @@ class NewChaosElement extends CollisionElement {
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	public void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {
+	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		
 		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8f) return;
@@ -910,14 +880,14 @@ class NewChaosElement extends CollisionElement {
 				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}
-			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
+/*			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
 				element =(NewChaosElement) lorenz.elements.get(index+1);
 					element1 =(NewChaosElement) lorenz.elements.get(index-1);
 					element2 =(NewChaosElement) lorenz.elements.get(index-2);
 					line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //					curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
-			}
 		}
+*/			}
 		stroke(0);
 
 	///	lorenz.moved=true;		
@@ -956,6 +926,119 @@ class NewChaosElement extends CollisionElement {
 ///////////////////////////////////////////////////////////
 }
 
+/* --------------------------------------------------------------------------
+ * SimpleOpenNI NITE Hands
+ * --------------------------------------------------------------------------
+ * Processing Wrapper for the OpenNI/Kinect library
+ * http://code.google.com/p/simple-openni
+ * --------------------------------------------------------------------------
+ * prog:  Max Rheiner / Interaction Design / zhdk / http://iad.zhdk.ch/
+ * date:  03/19/2011 (m/d/y)
+ * ----------------------------------------------------------------------------
+ * This example works with multiple hands, to enable mutliple hand change
+ * the ini file in /usr/etc/primesense/XnVHandGenerator/Nite.ini:
+ *  [HandTrackerManager]
+ *  AllowMultipleHands=1
+ *  TrackAdditionalHands=1
+ * on Windows you can find the file at:
+ *  C:\Program Files (x86)\Prime Sense\NITE\Hands\Data\Nite.ini
+ * ----------------------------------------------------------------------------
+ */
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// PointDrawer keeps track of the handpoints
+
+class KinectListener extends XnVPointControl
+{
+
+	chaosBG					that;
+	// NITE
+	XnVSessionManager 		sessionManager;
+	XnVFlowRouter     		flowRouter;
+	SimpleOpenNI     		context;
+///////////////////////////////////////////////////////////
+	
+	KinectListener(chaosBG that_, SimpleOpenNI context_) {
+		that=that_;
+		context=context_;
+		// mirror is by default enabled
+		context.setMirror(true);
+		
+		// enable depthMap generation 
+		context.enableDepth();
+		
+		// enable the hands + gesture
+		context.enableHands();
+		context.enableGesture();
+	
+		// setup NITE 
+		sessionManager = context.createSessionManager("Click,Wave", "RaiseHand");
+		flowRouter = new XnVFlowRouter();
+		flowRouter.SetActive(this);
+		sessionManager.AddListener(flowRouter);
+	}
+///////////////////////////////////////////////////////////
+
+	public void update(){
+		context.update();  
+ 		context.update(sessionManager);	
+ 		//image(context.depthImage(),0,0);
+	}
+///////////////////////////////////////////////////////////
+	
+	public void endSession(){
+		sessionManager.EndSession();
+		println("end session");	
+	};
+ 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+  public void OnPointCreate(XnVHandPointContext cxt)
+  {
+    // create a new list
+ //   addPoint(cxt.getNID(),new PVector(cxt.getPtPosition().getX(),cxt.getPtPosition().getY(),cxt.getPtPosition().getZ()));
+    println("OnPointCreate, handId: " + cxt.getNID());
+		float x=map(cxt.getPtPosition().getX(), -320,320,0,width);
+		float y=map(cxt.getPtPosition().getY(), 240,-240,0,height);
+		that.mouseElement =new BlobElement(that,new PVector(x,y,0));
+		collisionDetection.addElement(that.mouseElement);
+//		globalDisturbance=int(random(0,3));
+    
+ }
+///////////////////////////////////////////////////////////
+
+  public void OnPointUpdate(XnVHandPointContext cxt)
+  {
+//	println("OnPointUpdate " + cxt.getPtPosition());   
+//    addPoint(cxt.getNID(),new PVector(cxt.getPtPosition().getX(),cxt.getPtPosition().getY(),cxt.getPtPosition().getZ()));
+		float x=map(cxt.getPtPosition().getX(), -320,320,0,width);
+		float y=map(cxt.getPtPosition().getY(), 240,-240,0,height);
+		
+		that.movement=true;
+		that.mouseElement.move(new PVector(x,y,0));
+
+		pushMatrix();
+			
+			println(x+" "+y);
+			translate(x, y,0);
+			fill(200,0,0);
+			box(10);
+		popMatrix();
+			 noFill();
+  }
+///////////////////////////////////////////////////////////
+
+  public void OnPointDestroy(long nID)
+  {
+    println("OnPointDestroy, handId: " + nID);
+    
+		that.mouseElement.finalize();
+		collisionDetection.elements.remove(that.mouseElement);
+		that.mouseElement = null;
+
+  }
+
+}
   static public void main(String args[]) {
     PApplet.main(new String[] { "--bgcolor=#FFFFFF", "chaosBG" });
   }

@@ -18,7 +18,7 @@ class BlobElement extends CollisionElement {
 		location = location_;
 		startFrame=frameCount;
 
-		lorenzElement= new LorenzElement(that, location);
+		lorenzElement= new LorenzElement(that, location, this);
 	}
 	BlobElement(chaosBG that_, PVector location_) {
 		that=that_;
@@ -26,12 +26,11 @@ class BlobElement extends CollisionElement {
 		location = location_;
 		startFrame=frameCount;
 
-		lorenzElement= new LorenzElement(that, location);
+		lorenzElement= new LorenzElement(that, location,this);
 	}
 ///////////////////////////////////////////////////////////
 	void frameCollision() {}
 	void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void move(){};
@@ -45,8 +44,9 @@ class BlobElement extends CollisionElement {
 		if(frameCount-startFrame > 100 && random(0,1) >0.9) startFrame=frameCount;
 
 		location = newLocation;
-	
 		
+		if(lorenzElement.allSet == true) resetLorenzElement();
+	
 		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
 			startFrame=frameCount;
 			shapeSet=false;
@@ -63,9 +63,14 @@ class BlobElement extends CollisionElement {
 		
 	}
 ///////////////////////////////////////////////////////////
+	void resetLorenzElement(){
+		startFrame=frameCount;
+		shapeSet=false;
+		lorenzElement=new LorenzElement(that, location, this);
+	}
+///////////////////////////////////////////////////////////
 	void finalize() {
-		if(lorenzElement.allSet) return;
-	
+		if(lorenzElement.allSet) return;	
 		lorenzElement.remove();
 	}
 }

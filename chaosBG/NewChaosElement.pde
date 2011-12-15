@@ -57,23 +57,6 @@ class NewChaosElement extends CollisionElement {
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {
-		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
-		
-		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8) return;
-		
-		int pressedFrames = frameCount-element.startFrame;
-
-		PVector newVelocity= PVector.sub(location,element.location);
-		newVelocity.normalize();
-		newVelocity.mult(0.5*pressedFrames);
-		newVelocity.limit(5);
-		
-		velocity.add(newVelocity);
-		
-		friction=0.7;
-		disturbance=int(random(0,2));
-	}
 	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		

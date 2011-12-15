@@ -1,5 +1,7 @@
 class LorenzElement extends CollisionElement {
-	float 							defaultRadius=200;
+	BlobElement						blob;
+
+	float 							defaultRadius=180;
 	int								variableSets=19;
 
 	float							pushForce=5;
@@ -10,7 +12,7 @@ class LorenzElement extends CollisionElement {
 	float[] 						variable= {-1.11, 1.12, 4.49, 0.13, 1.4, 0.4, 0.13, 1.47, 0.13};
 	float[][] 						points;
 	PVector							average= new PVector(0,0,0);
-	float							zoom=35;
+	float							zoom=25;
 	float							rotation=0;
 	int								iterations=1000;
 	
@@ -21,9 +23,13 @@ class LorenzElement extends CollisionElement {
 	boolean							allSet=false;
 	int								count=0;	
 	boolean							moved=true;
+	
+	float							moveUp=0.8;
+	
 ///////////////////////////////////////////////////////////
-	LorenzElement(chaosBG that_, PVector location_, float actionRadius_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_, float actionRadius_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=actionRadius_;
 		location = location_;
 		startFrame=frameCount;
@@ -31,8 +37,9 @@ class LorenzElement extends CollisionElement {
 		getVariableSet();
 		generatePoints();
 	}
-	LorenzElement(chaosBG that_, PVector location_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=defaultRadius;
 		location = location_;
 		startFrame=frameCount;
@@ -55,17 +62,12 @@ class LorenzElement extends CollisionElement {
 			return;
 		}
 		
-		PVector newVelocity= PVector.sub(element.location,location);
-		newVelocity.normalize();
-		newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
-			
-		velocity.add(newVelocity);
-		
 		
  	}
 ///////////////////////////////////////////////////////////
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+///////////////////////////////////////////////////////////
 	void move() {
 		count = (frameCount-startFrame)*100;
 		if(count> iterations) count = iterations;
@@ -74,17 +76,35 @@ class LorenzElement extends CollisionElement {
 		
 		if(!allSet) return;
 		
-		draw();
+		velocity.limit(3);
 		
-//		velocity.y-=1;
+/*		velocity.limit(1);
+		velocity.limit(3);
+*/		
+		moveUp+=0.02;
+		velocity.y-=moveUp;
 		
-		velocity.limit(5);
-		
+/*		float distance=PVector.dist(new PVector(location.x,location.y), that.mouseElement.location);
+		if(distance<=actionRadius && false) {
+			PVector newVelocity= PVector.sub(location,element.location);
+			newVelocity.normalize();
+			
+			pushForce=5;
+			newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
+			velocity.add(newVelocity);
+		}
+	
+*/	
+		velocity.mult(that.globalFriction);	
 		if(velocity.mag() >0) that.lorenzMovement=true;
 		
 		location.add(new PVector(velocity.x,velocity.y));
-		
-		if(location.y < -200) remove();
+	
+		if(location.y < -actionRadius) {
+			remove();
+			return;	
+		}
+		draw();
 	}
 	
 	void remove(){
@@ -156,12 +176,12 @@ class LorenzElement extends CollisionElement {
 			stroke(0);
 			
 			translate(location.x, location.y,location.z);
-			rotation+=0.1;
+			rotation+=0.05;
 			rotateY(rotation);
-			box(10);
+//			box(10);
 			pushMatrix();			
 				translate(-average.x, -average.y,-average.z);
-				box(10);
+//				box(10);
 				beginShape();
 					for(int i=0; i< points.length; i++) {
 						x =points[i][0];

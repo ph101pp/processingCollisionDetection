@@ -95,7 +95,9 @@ void draw() {
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
 		elementL= (LorenzElement) lorenzElements.get(i);
-		if(elementL.moved==false) elementL.allSet=true;
+		if(elementL.moved==false) {
+			elementL.allSet=true;
+		}
 		elementL.moved=false;
 		collisionDetection.testElement(elementL);
 		elementL.move();

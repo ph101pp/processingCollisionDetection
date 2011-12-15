@@ -7,10 +7,12 @@ import fullscreen.*;
 import japplemenubar.*;
 import 			java.util.*;
 import damkjer.ocd.*;
+import SimpleOpenNI.*;
+
+
 ///////////////////////////////////////////////////////////
 chaosBG								that;
 FullScreen 							fullScreen;
-KinectTracker 						tracker;
 
 ///////////
 int 								elementCount = 6000;
@@ -38,13 +40,16 @@ float[]								blobs = {0,0};
 
 boolean								blobPressed=false;
 float								blobMoved=10;
-MouseElement						mouseElement=null;
+BlobElement						mouseElement=null;
 
+///////////////////////////////////////////////////////////
+KinectListener      				kinectListener;
 
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1280,970,P3D);
+//	size(1280,1024,P3D);
+	size(1680,1050,P3D);
 	background(255);
 	stroke(0);
 	frameRate(25);
@@ -53,9 +58,13 @@ void setup() {
 	elementCount=int(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=int(map(width*height, 0,1680*1050 ,0, depth));
 
-	if(kinect) tracker = new KinectTracker(this);
 	fullScreen = new FullScreen(this); 
-//	fullScreen.enter(); 
+
+	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
+
+
+
+
   	
 	
 
@@ -66,18 +75,18 @@ void setup() {
 	}
 	collisionDetection = new CollisionDetection(that, elements);
 }
-
-
 ///////////////////////////////////////////////////////////
 void draw() {
-	println(frameRate);
+//	println(frameRate);
 	translate(0,0,depth);
 	background(255);
-	if(kinect) blobs=tracker.calculateBlobs();
 	environment();
 	movement=false;
 	lorenzMovement=false;
-	mouseElement();
+	//Kinect
+	kinectListener.update();
+	
+	//mouseElement();
 	
 	collisionDetection.mapElements();
 	
@@ -86,7 +95,9 @@ void draw() {
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
 		elementL= (LorenzElement) lorenzElements.get(i);
-		if(elementL.moved==false) elementL.allSet=true;
+		if(elementL.moved==false) {
+			elementL.allSet=true;
+		}
 		elementL.moved=false;
 		collisionDetection.testElement(elementL);
 		elementL.move();
@@ -112,12 +123,12 @@ void draw() {
 ///////////////////////////////////////////////////////////
 void mouseElement() {
 	if(mousePressed && mouseElement==null) {
-		mouseElement =new MouseElement(that);
+		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
 //		globalDisturbance=int(random(0,3));
 	}
 	else if(mousePressed && mouseElement != null) {
-		mouseElement.move();
+		mouseElement.move(new PVector(mouseX,mouseY));
 	}
 	else if(!mousePressed && mouseElement != null) {
 		mouseElement.finalize();
@@ -127,14 +138,14 @@ void mouseElement() {
 }
 ///////////////////////////////////////////////////////////
 void environment() {
-//	Mouse
+/*/	Mouse
 	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
 	mousePos=new PVector(mouseX,mouseY);
 	if(mouseMoved > 0) movement=true;
-
+*/
 //	friction
-	if(!movement && !lorenzMovement && globalFriction > 0.0) globalFriction-=0.005;
-	else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.4)) globalFriction+=0.08;
+	if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
+	else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
 
 // Blob
 	blobPressed = (int(blobs[0]) > 0 && int(blobs[1]) > 0);
@@ -180,6 +191,36 @@ void frame(NewChaosElement element) {
 //			element.velocity.add(new PVector(0,0,-force/2));
 	}
 }	
-void stop() {
-    that.tracker.kinect.quit();
-  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// session callbacks
+
+void onStartSession(PVector pos)
+{
+  println("onStartSession: " + pos);
+}
+
+void onEndSession()
+{
+  println("onEndSession: ");
+}
+
+void onFocusSession(String strFocus,PVector pos,float progress)
+{
+  println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+void keyPressed() {
+	switch(key)
+	{
+		case 'e':
+			// end sessions
+			kinectListener.endSession();
+		break;
+		
+		case ' ':
+			fullScreen.enter(); 
+		break;
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////

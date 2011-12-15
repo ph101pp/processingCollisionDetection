@@ -35,7 +35,7 @@ class NewChaosElement extends CollisionElement {
 			pointLocation.mult(lorenz.zoom);
 			pointLocation.sub(lorenz.average);
 			pointLocation.add(lorenz.location);
-			if(PVector.dist(location, pointLocation)<=random(10, 20)) return;
+			if(PVector.dist(location, pointLocation)<=random(5, 15)) return;
 		}
 		if(distance < actionRadius*0.9) {
 			newVelocity= PVector.sub(location,element.location);
@@ -57,7 +57,7 @@ class NewChaosElement extends CollisionElement {
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {
+	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		
 		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8) return;
@@ -126,14 +126,14 @@ class NewChaosElement extends CollisionElement {
 				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}
-			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
+/*			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
 				element =(NewChaosElement) lorenz.elements.get(index+1);
 					element1 =(NewChaosElement) lorenz.elements.get(index-1);
 					element2 =(NewChaosElement) lorenz.elements.get(index-2);
 					line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //					curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
-			}
 		}
+*/			}
 		stroke(0);
 
 	///	lorenz.moved=true;		

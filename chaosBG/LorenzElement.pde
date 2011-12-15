@@ -1,4 +1,6 @@
 class LorenzElement extends CollisionElement {
+	BlobElement						blob;
+
 	float 							defaultRadius=180;
 	int								variableSets=19;
 
@@ -23,9 +25,11 @@ class LorenzElement extends CollisionElement {
 	boolean							moved=true;
 	
 	float							moveUp=0.8;
+	
 ///////////////////////////////////////////////////////////
-	LorenzElement(chaosBG that_, PVector location_, float actionRadius_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_, float actionRadius_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=actionRadius_;
 		location = location_;
 		startFrame=frameCount;
@@ -33,8 +37,9 @@ class LorenzElement extends CollisionElement {
 		getVariableSet();
 		generatePoints();
 	}
-	LorenzElement(chaosBG that_, PVector location_) {
+	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_) {
 		that=that_;
+		blob=blob_;
 		actionRadius=defaultRadius;
 		location = location_;
 		startFrame=frameCount;
@@ -61,7 +66,6 @@ class LorenzElement extends CollisionElement {
  	}
 ///////////////////////////////////////////////////////////
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	void move() {
