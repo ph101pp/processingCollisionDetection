@@ -61,9 +61,9 @@ class LorenzElement extends CollisionElement {
  	}
 ///////////////////////////////////////////////////////////
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {
-	
-	}
+	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+///////////////////////////////////////////////////////////
 	void move() {
 		count = (frameCount-startFrame)*100;
 		if(count> iterations) count = iterations;
@@ -80,7 +80,7 @@ class LorenzElement extends CollisionElement {
 		moveUp+=0.02;
 		velocity.y-=moveUp;
 		
-		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(mouseX, mouseY));
+		float distance=PVector.dist(new PVector(location.x,location.y),that.mouseElement.location);
 		if(distance<=actionRadius && false) {
 			PVector newVelocity= PVector.sub(location,element.location);
 			newVelocity.normalize();

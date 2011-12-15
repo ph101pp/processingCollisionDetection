@@ -7,6 +7,9 @@ import fullscreen.*;
 import japplemenubar.*;
 import 			java.util.*;
 import damkjer.ocd.*;
+import SimpleOpenNI.*;
+
+
 ///////////////////////////////////////////////////////////
 chaosBG								that;
 FullScreen 							fullScreen;
@@ -38,8 +41,10 @@ float[]								blobs = {0,0};
 
 boolean								blobPressed=false;
 float								blobMoved=10;
-MouseElement						mouseElement=null;
+BlobElement						mouseElement=null;
 
+///////////////////////////////////////////////////////////
+KinectListener      				kinectListener;
 
 ///////////////////////////////////////////////////////////
 void setup() {
@@ -53,9 +58,14 @@ void setup() {
 	elementCount=int(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=int(map(width*height, 0,1680*1050 ,0, depth));
 
-	if(kinect) tracker = new KinectTracker(this);
 	fullScreen = new FullScreen(this); 
 //	fullScreen.enter(); 
+
+	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
+
+
+
+
   	
 	
 
@@ -66,18 +76,18 @@ void setup() {
 	}
 	collisionDetection = new CollisionDetection(that, elements);
 }
-
-
 ///////////////////////////////////////////////////////////
 void draw() {
-	println(frameRate);
+//	println(frameRate);
 	translate(0,0,depth);
 	background(255);
-	if(kinect) blobs=tracker.calculateBlobs();
 	environment();
 	movement=false;
 	lorenzMovement=false;
-	mouseElement();
+	//Kinect
+	kinectListener.update();
+	
+	//mouseElement();
 	
 	collisionDetection.mapElements();
 	
@@ -112,12 +122,12 @@ void draw() {
 ///////////////////////////////////////////////////////////
 void mouseElement() {
 	if(mousePressed && mouseElement==null) {
-		mouseElement =new MouseElement(that);
+		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
 //		globalDisturbance=int(random(0,3));
 	}
 	else if(mousePressed && mouseElement != null) {
-		mouseElement.move();
+		mouseElement.move(new PVector(mouseX,mouseY));
 	}
 	else if(!mousePressed && mouseElement != null) {
 		mouseElement.finalize();
@@ -180,6 +190,35 @@ void frame(NewChaosElement element) {
 //			element.velocity.add(new PVector(0,0,-force/2));
 	}
 }	
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// session callbacks
+
+void onStartSession(PVector pos)
+{
+  println("onStartSession: " + pos);
+}
+
+void onEndSession()
+{
+  println("onEndSession: ");
+}
+
+void onFocusSession(String strFocus,PVector pos,float progress)
+{
+  println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+void keyPressed() {
+	switch(key)
+	{
+		case 'e':
+			// end sessions
+			kinectListener.endSession();
+		break;
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 void stop() {
     that.tracker.kinect.quit();
   }

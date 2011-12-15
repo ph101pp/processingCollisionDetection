@@ -1,4 +1,4 @@
-class MouseElement extends CollisionElement {
+class BlobElement extends CollisionElement {
 	float 							defaultRadius=180;
 
 	int								startFrame;
@@ -12,18 +12,18 @@ class MouseElement extends CollisionElement {
 //	PROGRAMM
 	PVector newLocation;
 ///////////////////////////////////////////////////////////
-	MouseElement(chaosBG that_, float actionRadius_) {
+	BlobElement(chaosBG that_, PVector location_, float actionRadius_) {
 		that=that_;
 		actionRadius=actionRadius_;
-		location = new PVector (mouseX, mouseY,0);
+		location = location_;
 		startFrame=frameCount;
 
 		lorenzElement= new LorenzElement(that, location);
 	}
-	MouseElement(chaosBG that_) {
+	BlobElement(chaosBG that_, PVector location_) {
 		that=that_;
 		actionRadius=defaultRadius;
-		location = new PVector (mouseX, mouseY,0);
+		location = location_;
 		startFrame=frameCount;
 
 		lorenzElement= new LorenzElement(that, location);
@@ -34,9 +34,10 @@ class MouseElement extends CollisionElement {
 	void collide(MouseElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
 	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	void move(){};
 ///////////////////////////////////////////////////////////
-	void move() {
-		PVector newLocation =new PVector (mouseX, mouseY,0);
+	
+	void move(PVector newLocation) {
 		moved=PVector.dist(newLocation, location);
 		
 		if(moved>0) that.movement=true;
