@@ -80,7 +80,7 @@ class LorenzElement extends CollisionElement {
 		moveUp+=0.02;
 		velocity.y-=moveUp;
 		
-		float distance=PVector.dist(new PVector(location.x,location.y),that.mouseElement.location);
+/*		float distance=PVector.dist(new PVector(location.x,location.y), that.mouseElement.location);
 		if(distance<=actionRadius && false) {
 			PVector newVelocity= PVector.sub(location,element.location);
 			newVelocity.normalize();
@@ -90,7 +90,7 @@ class LorenzElement extends CollisionElement {
 			velocity.add(newVelocity);
 		}
 	
-	
+*/	
 		velocity.mult(that.globalFriction);	
 		if(velocity.mag() >0) that.lorenzMovement=true;
 		

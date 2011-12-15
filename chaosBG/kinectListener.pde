@@ -85,7 +85,8 @@ class KinectListener extends XnVPointControl
 //    addPoint(cxt.getNID(),new PVector(cxt.getPtPosition().getX(),cxt.getPtPosition().getY(),cxt.getPtPosition().getZ()));
 		float x=map(cxt.getPtPosition().getX(), -320,320,0,width);
 		float y=map(cxt.getPtPosition().getY(), 240,-240,0,height);
-
+		
+		that.movement=true;
 		that.mouseElement.move(new PVector(x,y,0));
 
 		pushMatrix();

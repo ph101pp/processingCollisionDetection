@@ -44,7 +44,7 @@ class BlobElement extends CollisionElement {
 		
 		if(frameCount-startFrame > 100 && random(0,1) >0.9) startFrame=frameCount;
 
-		location = new PVector (mouseX, mouseY,0);
+		location = newLocation;
 	
 		
 		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {

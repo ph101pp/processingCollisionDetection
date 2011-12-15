@@ -13,7 +13,6 @@ import SimpleOpenNI.*;
 ///////////////////////////////////////////////////////////
 chaosBG								that;
 FullScreen 							fullScreen;
-KinectTracker 						tracker;
 
 ///////////
 int 								elementCount = 6000;
@@ -49,7 +48,8 @@ KinectListener      				kinectListener;
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1280,1024,P3D);
+//	size(1280,1024,P3D);
+	size(1680,1050,P3D);
 	background(255);
 	stroke(0);
 	frameRate(25);
@@ -59,7 +59,6 @@ void setup() {
 	depth=int(map(width*height, 0,1680*1050 ,0, depth));
 
 	fullScreen = new FullScreen(this); 
-//	fullScreen.enter(); 
 
 	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
 
@@ -137,11 +136,11 @@ void mouseElement() {
 }
 ///////////////////////////////////////////////////////////
 void environment() {
-//	Mouse
+/*/	Mouse
 	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
 	mousePos=new PVector(mouseX,mouseY);
 	if(mouseMoved > 0) movement=true;
-
+*/
 //	friction
 	if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
 	else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
@@ -216,9 +215,10 @@ void keyPressed() {
 			// end sessions
 			kinectListener.endSession();
 		break;
+		
+		case ' ':
+			fullScreen.enter(); 
+		break;
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-void stop() {
-    that.tracker.kinect.quit();
-  }
