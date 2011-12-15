@@ -34,7 +34,7 @@ void setup()
   context = new SimpleOpenNI(this);
    
   // disable mirror
-  context.setMirror(false);
+  context.setMirror(true);
 
   // enable depthMap generation 
   context.enableDepth();
@@ -137,7 +137,7 @@ void onCreateHands(int handId,PVector pos,float time)
 
 void onUpdateHands(int handId,PVector pos,float time)
 {
-  //println("onUpdateHandsCb - handId: " + handId + ", pos: " + pos + ", time:" + time);
+	println("onUpdateHandsCb - handId: " + handId + ", pos: " + pos + ", time:" + time);
   handVec = pos;
   
   handVecList.add(0,pos);
