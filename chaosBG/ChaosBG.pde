@@ -31,6 +31,7 @@ int									globalDisturbance=0;
 PVector								mousePos=new PVector(mouseX,mouseY);
 float								mouseMoved;
 boolean								movement=false;
+boolean								lorenzMovement=false;
 
 float								blobStart,blobFrames;
 float[]								blobs = {0,0};
@@ -43,7 +44,7 @@ MouseElement						mouseElement=null;
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1680,1050,P3D);
+	size(1280,1024,P3D);
 	background(255);
 	stroke(0);
 	frameRate(25);
@@ -73,9 +74,9 @@ void draw() {
 	translate(0,0,depth);
 	background(255);
 	if(kinect) blobs=tracker.calculateBlobs();
-	movement=false;
 	environment();
-
+	movement=false;
+	lorenzMovement=false;
 	mouseElement();
 	
 	collisionDetection.mapElements();
@@ -83,14 +84,13 @@ void draw() {
 
 //	Mouse 'n' Blobs
 	Iterator itr0 = lorenzElements.iterator();
-	while(itr0.hasNext()) {
-		elementL= (LorenzElement)itr0.next();
+	for(int i=lorenzElements.size()-1; i>=0; i--) {
+		elementL= (LorenzElement) lorenzElements.get(i);
 		if(elementL.moved==false) elementL.allSet=true;
 		elementL.moved=false;
 		collisionDetection.testElement(elementL);
 		elementL.move();
 	}
-	
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
 	while(itr.hasNext()) {
@@ -103,7 +103,7 @@ void draw() {
 	while(itr2.hasNext()) {
 		elementN= (NewChaosElement)itr2.next();
 		elementN.move();
-		frame(elementN);
+		if(elementN.lorenz==null ) frame(elementN);
 		elementN.lorenz=null;
 	}
 	
@@ -133,9 +133,8 @@ void environment() {
 	if(mouseMoved > 0) movement=true;
 
 //	friction
-	if(true) if(!movement && globalFriction > 0.0) globalFriction-=0.005;
-	else if(movement && globalFriction <= 0.9) globalFriction+=0.01;
-
+	if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
+	else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
 
 // Blob
 	blobPressed = (int(blobs[0]) > 0 && int(blobs[1]) > 0);
@@ -149,7 +148,6 @@ void environment() {
 void frame(NewChaosElement element) {
 	NewChaosElement thisElement = (NewChaosElement) element;
 	
-	if(element.lorenz!=null ) return;
 	float border =  30;
 	if(element.location.x < 0-border) {
 		element.location.x*=-1;

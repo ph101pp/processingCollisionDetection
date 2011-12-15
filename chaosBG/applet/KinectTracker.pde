@@ -65,7 +65,7 @@ class KinectTracker {
     display.updatePixels();
 
     // Draw the image
-    image(display, 0, 0);
+ //   image(display, 0, 0);
   }
 
 
@@ -77,28 +77,21 @@ class KinectTracker {
   
     createDisplay();
     opencv.copy(display);
-   image( opencv.image(), 640, 0 );
+//   	image( opencv.image(), 640, 0 );
     opencv.threshold( 80 );
     Blob[] blobs = opencv.blobs( 10, width*height/2, 100, true, OpenCV.MAX_VERTICES*4 );
 	
-    // draw blob results
+   // draw blob results
         for( int i=0; i<blobs.length; i++ ) {
-        	println(blobs[i].points.length);
-        	
-        	
-
-         beginShape();
            for( int j=0; j<blobs[i].points.length; j++ ) {
-              vertex( blobs[i].points[j].x, blobs[i].points[j].y );
-           
            		sumX+=blobs[i].points[j].x;
            		sumY+=blobs[i].points[j].y;
            		count++;
-           
+        			
            }
-          endShape(CLOSE);
        }
        
+      
     float[] value = {sumX/count, sumY/count};
     return value;
   }

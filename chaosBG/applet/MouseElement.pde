@@ -1,5 +1,5 @@
 class MouseElement extends CollisionElement {
-	float 							defaultRadius=180;
+	float 							defaultRadius=200;
 
 	int								startFrame;
 	
@@ -45,7 +45,7 @@ class MouseElement extends CollisionElement {
 		location = new PVector (mouseX, mouseY,0);
 	
 		
-		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
+		if(shapeSet && (moved<=0 || (PVector.dist(location, lorenzElement.location) > 80 && !lorenzElement.allSet))) {
 			startFrame=frameCount;
 			shapeSet=false;
 			lorenzElement.remove();
