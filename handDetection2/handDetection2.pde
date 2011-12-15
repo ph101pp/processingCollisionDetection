@@ -39,15 +39,14 @@ void setup()
   context.enableDepth();
   
   // enable the hands + gesture
+  context.enableGesture();
   context.enableHands();
  
   // setup NITE 
   sessionManager = context.createSessionManager("Click,Wave", "RaiseHand");
-
   pointDrawer = new PointDrawer();
   flowRouter = new XnVFlowRouter();
   flowRouter.SetActive(pointDrawer);
-  
   sessionManager.AddListener(flowRouter);
            
   size(context.depthWidth(), context.depthHeight()); 
@@ -58,8 +57,7 @@ void draw()
 {
   background(255);
   // update the cam
-  context.update();
-  
+  context.update();  
   // update nite
   context.update(sessionManager);
   
