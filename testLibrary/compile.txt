@@ -1,0 +1,3 @@
+javac -classpath .:core.jar testLibrary.java
+
+jar cf testLibrary.jar testLibrary
