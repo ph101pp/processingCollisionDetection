@@ -1,4 +1,4 @@
-class BlobElement extends CollisionElement {
+class BlobElement extends MyCollisionElement {
 	float 							defaultRadius=180;
 
 	int								startFrame;
@@ -30,10 +30,6 @@ class BlobElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void frameCollision() {}
-	void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void move(){};
 ///////////////////////////////////////////////////////////
 	
 	void move(PVector newLocation) {
@@ -47,7 +43,7 @@ class BlobElement extends CollisionElement {
 		
 		if(lorenzElement.allSet == true) resetLorenzElement();
 	
-		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
+		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 180)) {
 			startFrame=frameCount;
 			shapeSet=false;
 			lorenzElement.remove();

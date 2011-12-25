@@ -1,8 +1,8 @@
-class LorenzElement extends CollisionElement {
+class LorenzElement extends MyCollisionElement {
 	BlobElement						blob;
 
 	float 							defaultRadius=180;
-	int								variableSets=19;
+	int								variableSets=17;
 
 	float							pushForce=5;
 
@@ -64,9 +64,6 @@ class LorenzElement extends CollisionElement {
 		
 		
  	}
-///////////////////////////////////////////////////////////
-	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	void move() {
 		count = (frameCount-startFrame)*100;
