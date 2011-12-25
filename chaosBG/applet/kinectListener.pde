@@ -89,14 +89,14 @@ class KinectListener extends XnVPointControl
 		that.movement=true;
 		that.mouseElement.move(new PVector(x,y,0));
 
+		if(true) return;
 		pushMatrix();
-			
 			println(x+" "+y);
 			translate(x, y,0);
 			fill(200,0,0);
 			box(10);
+			noFill();
 		popMatrix();
-			 noFill();
   }
 ///////////////////////////////////////////////////////////
 

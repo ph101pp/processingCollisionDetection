@@ -1,5 +1,5 @@
 class LorenzFormula {
-	boolean paused=true;
+	boolean paused=false;
 
 	int animate=5,
 		direction=1,

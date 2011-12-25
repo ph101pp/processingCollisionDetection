@@ -96,7 +96,7 @@ void draw() {
 	translate(position[0]-averX/10, position[1]-averY/10, position[2]-averZ/10);
 //	rotateY(rotationY);
 	fill(255,0,0);
-	box(10);
+	//box(10);
 	
 	stroke(10);
 	noFill();

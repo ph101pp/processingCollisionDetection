@@ -1,13 +1,14 @@
-import org.openkinect.*;
+/*import org.openkinect.*;
 import org.openkinect.processing.*;
 import hypermedia.video.*;
 import processing.video.*;
 import java.awt.*;
+import damkjer.ocd.*;
+*/
 import fullscreen.*;
 import japplemenubar.*;
-import 			java.util.*;
-import damkjer.ocd.*;
 import SimpleOpenNI.*;
+import geomerative.*;
 
 
 ///////////////////////////////////////////////////////////
@@ -15,10 +16,14 @@ chaosBG								that;
 FullScreen 							fullScreen;
 
 ///////////
-int 								elementCount = 6000;
-int 								depth = 10;
+//int 								elementCount = 6000;
+//int 								depth = 10;
+int 								elementCount = 5800;
+int 								depth = 8;
+//int 								elementCount = 5500;
+//int 								depth = 5;
 float								globalFriction=0.8;
-boolean								kinect = false;
+boolean								kinect = true;
 ///////////
 
 ArrayList<CollisionElement> 		elements = new ArrayList();
@@ -28,65 +33,73 @@ CollisionElement					element;
 NewChaosElement						elementN;
 LorenzElement						elementL;
 int									globalDisturbance=0;
+BlobElement							mouseElement=null;
 
 			
 PVector								mousePos=new PVector(mouseX,mouseY);
 float								mouseMoved;
+
 boolean								movement=false;
 boolean								lorenzMovement=false;
 
-float								blobStart,blobFrames;
-float[]								blobs = {0,0};
-
-boolean								blobPressed=false;
-float								blobMoved=10;
-BlobElement						mouseElement=null;
-
-///////////////////////////////////////////////////////////
 KinectListener      				kinectListener;
+RShape								ranShape;
 
+boolean 							ran=true;
+float								ranStop;
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-//	size(1280,1024,P3D);
 	size(1680,1050,P3D);
+//	size(1280,720,P3D);
 	background(255);
 	stroke(0);
-	frameRate(25);
+	frameRate(17);
 	noFill();
 
 	elementCount=int(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=int(map(width*height, 0,1680*1050 ,0, depth));
-
 	fullScreen = new FullScreen(this); 
+	fullScreen.setShortcutsEnabled(true);
+	
+	if(kinect) kinectListener = new KinectListener(this, new SimpleOpenNI(this));
 
-	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
 
 
-
+	RG.init(this);
+ 	RG.ignoreStyles(false);
+ 	RG.setPolygonizer(RG.ADAPTATIVE);
+ 	ranShape = RG.loadShape("data/ran.svg");
+  	ranShape.centerIn(g, 100, 1, 1);
+ 	ranShape.scale(map(width*height, 1280*720,1680*1050 ,0.8, 0.5));
+ 	ranShape.translate(width/2,height/2);
 
   	
 	
 
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
-		element=new NewChaosElement(this);
-		elements.add(element);
+		elementN=new NewChaosElement(this);
+		
+		while(!ranShape.contains(elementN.location.x,elementN.location.y))
+			elementN.location = new PVector (random(width), random(height),random(depth));
+		elementN.ranPoint=new PVector(elementN.location.x,elementN.location.y,0);
+		elements.add(elementN);
 	}
 	collisionDetection = new CollisionDetection(that, elements);
 }
 ///////////////////////////////////////////////////////////
 void draw() {
-//	println(frameRate);
+	println(frameRate);
 	translate(0,0,depth);
 	background(255);
+// 	ranShape.draw();
 	environment();
 	movement=false;
 	lorenzMovement=false;
 	//Kinect
-	kinectListener.update();
-	
-	//mouseElement();
+	if(kinect) kinectListener.update();
+	else mouseElement();
 	
 	collisionDetection.mapElements();
 	
@@ -104,24 +117,33 @@ void draw() {
 	}
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
-	while(itr.hasNext()) {
+	int k=0;
+	while(itr.hasNext() && (false || !ran || k<=300)) {
 		element= (CollisionElement)itr.next();
 		collisionDetection.testElement(element);
+		k++;
 	}
+
 
 //	Move!
 	Iterator itr2 = elements.iterator(); 
-	while(itr2.hasNext()) {
+	k=0;
+	while(itr2.hasNext() && (true || !ran || k<=1000)) {
 		elementN= (NewChaosElement)itr2.next();
 		elementN.move();
 		if(elementN.lorenz==null ) frame(elementN);
 		elementN.lorenz=null;
+		k++;
 	}
 	
 
 }
 ///////////////////////////////////////////////////////////
 void mouseElement() {
+	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
+	mousePos=new PVector(mouseX,mouseY);
+	if(mouseMoved > 0) movement=true;
+
 	if(mousePressed && mouseElement==null) {
 		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
@@ -138,21 +160,11 @@ void mouseElement() {
 }
 ///////////////////////////////////////////////////////////
 void environment() {
-/*/	Mouse
-	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
-	mousePos=new PVector(mouseX,mouseY);
-	if(mouseMoved > 0) movement=true;
-*/
 //	friction
-	if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
-	else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
-
-// Blob
-	blobPressed = (int(blobs[0]) > 0 && int(blobs[1]) > 0);
-	if(!blobPressed) blobStart=frameCount;
-	if(blobPressed) blobFrames=frameCount-blobStart;
-	else blobFrames=0;
-	
+	if(!ran) {
+		if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
+		else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
+	}
 	globalDisturbance--;	
 }
 ///////////////////////////////////////////////////////////
@@ -194,32 +206,28 @@ void frame(NewChaosElement element) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // session callbacks
-
-void onStartSession(PVector pos)
-{
-  println("onStartSession: " + pos);
+void onStartSession(PVector pos) {
+	println("onStartSession: " + pos);
 }
 
-void onEndSession()
-{
-  println("onEndSession: ");
+void onEndSession() {
+	println("onEndSession: ");
 }
 
-void onFocusSession(String strFocus,PVector pos,float progress)
-{
-  println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
+void onFocusSession(String strFocus,PVector pos,float progress) {
+	println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 void keyPressed() {
-	switch(key)
-	{
+	switch(key) {
 		case 'e':
 			// end sessions
-			kinectListener.endSession();
+			if(kinect) kinectListener.endSession();
 		break;
-		
+
 		case ' ':
-			fullScreen.enter(); 
+			ran=!ran;
+			globalFriction=0.7;
 		break;
 	}
 }

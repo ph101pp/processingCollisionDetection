@@ -47,7 +47,7 @@ class BlobElement extends CollisionElement {
 		
 		if(lorenzElement.allSet == true) resetLorenzElement();
 	
-		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
+		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 20)) {
 			startFrame=frameCount;
 			shapeSet=false;
 			lorenzElement.remove();
@@ -64,6 +64,7 @@ class BlobElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void resetLorenzElement(){
+		startFrame=frameCount;
 		shapeSet=false;
 		lorenzElement=new LorenzElement(that, location, this);
 	}

@@ -1,16 +1,15 @@
 import processing.core.*; 
 import processing.xml.*; 
 
-import org.openkinect.*; 
 import org.openkinect.processing.*; 
 import hypermedia.video.*; 
 import processing.video.*; 
 import java.awt.*; 
+import damkjer.ocd.*; 
 import fullscreen.*; 
 import japplemenubar.*; 
-import java.util.*; 
-import damkjer.ocd.*; 
 import SimpleOpenNI.*; 
+import geomerative.*; 
 
 import java.applet.*; 
 import java.awt.Dimension; 
@@ -77,7 +76,7 @@ class BlobElement extends CollisionElement {
 		
 		if(lorenzElement.allSet == true) resetLorenzElement();
 	
-		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 80)) {
+		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 20)) {
 			startFrame=frameCount;
 			shapeSet=false;
 			lorenzElement.remove();
@@ -94,6 +93,7 @@ class BlobElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	public void resetLorenzElement(){
+		startFrame=frameCount;
 		shapeSet=false;
 		lorenzElement=new LorenzElement(that, location, this);
 	}
@@ -103,12 +103,13 @@ class BlobElement extends CollisionElement {
 		lorenzElement.remove();
 	}
 }
+/*import org.openkinect.*;
 
 
 
 
 
-
+*/
 
 
 
@@ -120,10 +121,14 @@ chaosBG								that;
 FullScreen 							fullScreen;
 
 ///////////
-int 								elementCount = 6000;
-int 								depth = 10;
+//int 								elementCount = 6000;
+//int 								depth = 10;
+int 								elementCount = 5800;
+int 								depth = 8;
+//int 								elementCount = 5500;
+//int 								depth = 5;
 float								globalFriction=0.8f;
-boolean								kinect = false;
+boolean								kinect = true;
 ///////////
 
 ArrayList<CollisionElement> 		elements = new ArrayList();
@@ -133,65 +138,73 @@ CollisionElement					element;
 NewChaosElement						elementN;
 LorenzElement						elementL;
 int									globalDisturbance=0;
+BlobElement							mouseElement=null;
 
 			
 PVector								mousePos=new PVector(mouseX,mouseY);
 float								mouseMoved;
+
 boolean								movement=false;
 boolean								lorenzMovement=false;
 
-float								blobStart,blobFrames;
-float[]								blobs = {0,0};
-
-boolean								blobPressed=false;
-float								blobMoved=10;
-BlobElement						mouseElement=null;
-
-///////////////////////////////////////////////////////////
 KinectListener      				kinectListener;
+RShape								ranShape;
 
+boolean 							ran=true;
+float								ranStop;
 ///////////////////////////////////////////////////////////
 public void setup() {
 	that = this;
-//	size(1280,1024,P3D);
 	size(1680,1050,P3D);
+//	size(1280,720,P3D);
 	background(255);
 	stroke(0);
-	frameRate(25);
+	frameRate(17);
 	noFill();
 
 	elementCount=PApplet.parseInt(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=PApplet.parseInt(map(width*height, 0,1680*1050 ,0, depth));
-
 	fullScreen = new FullScreen(this); 
+	fullScreen.setShortcutsEnabled(true);
+	
+	if(kinect) kinectListener = new KinectListener(this, new SimpleOpenNI(this));
 
-	kinectListener = new KinectListener(this, new SimpleOpenNI(this));
 
 
-
+	RG.init(this);
+ 	RG.ignoreStyles(false);
+ 	RG.setPolygonizer(RG.ADAPTATIVE);
+ 	ranShape = RG.loadShape("data/ran.svg");
+  	ranShape.centerIn(g, 100, 1, 1);
+ 	ranShape.scale(map(width*height, 1280*720,1680*1050 ,0.8f, 0.5f));
+ 	ranShape.translate(width/2,height/2);
 
   	
 	
 
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
-		element=new NewChaosElement(this);
-		elements.add(element);
+		elementN=new NewChaosElement(this);
+		
+		while(!ranShape.contains(elementN.location.x,elementN.location.y))
+			elementN.location = new PVector (random(width), random(height),random(depth));
+		elementN.ranPoint=new PVector(elementN.location.x,elementN.location.y,0);
+		elements.add(elementN);
 	}
 	collisionDetection = new CollisionDetection(that, elements);
 }
 ///////////////////////////////////////////////////////////
 public void draw() {
-//	println(frameRate);
+	println(frameRate);
 	translate(0,0,depth);
 	background(255);
+// 	ranShape.draw();
 	environment();
 	movement=false;
 	lorenzMovement=false;
 	//Kinect
-	kinectListener.update();
-	
-	//mouseElement();
+	if(kinect) kinectListener.update();
+	else mouseElement();
 	
 	collisionDetection.mapElements();
 	
@@ -209,24 +222,33 @@ public void draw() {
 	}
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
-	while(itr.hasNext()) {
+	int k=0;
+	while(itr.hasNext() && (false || !ran || k<=300)) {
 		element= (CollisionElement)itr.next();
 		collisionDetection.testElement(element);
+		k++;
 	}
+
 
 //	Move!
 	Iterator itr2 = elements.iterator(); 
-	while(itr2.hasNext()) {
+	k=0;
+	while(itr2.hasNext() && (true || !ran || k<=1000)) {
 		elementN= (NewChaosElement)itr2.next();
 		elementN.move();
 		if(elementN.lorenz==null ) frame(elementN);
 		elementN.lorenz=null;
+		k++;
 	}
 	
 
 }
 ///////////////////////////////////////////////////////////
 public void mouseElement() {
+	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
+	mousePos=new PVector(mouseX,mouseY);
+	if(mouseMoved > 0) movement=true;
+
 	if(mousePressed && mouseElement==null) {
 		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
@@ -243,21 +265,11 @@ public void mouseElement() {
 }
 ///////////////////////////////////////////////////////////
 public void environment() {
-/*/	Mouse
-	mouseMoved=PVector.dist(mousePos,new PVector(mouseX, mouseY));
-	mousePos=new PVector(mouseX,mouseY);
-	if(mouseMoved > 0) movement=true;
-*/
 //	friction
-	if(!movement && (!lorenzMovement || globalFriction > 0.6f) && globalFriction > 0.0f) globalFriction-=0.005f;
-	else if((movement || lorenzMovement) && ((globalFriction <= 0.85f && !lorenzMovement) || globalFriction <= 0.75f)) globalFriction+=0.08f;
-
-// Blob
-	blobPressed = (PApplet.parseInt(blobs[0]) > 0 && PApplet.parseInt(blobs[1]) > 0);
-	if(!blobPressed) blobStart=frameCount;
-	if(blobPressed) blobFrames=frameCount-blobStart;
-	else blobFrames=0;
-	
+	if(!ran) {
+		if(!movement && (!lorenzMovement || globalFriction > 0.6f) && globalFriction > 0.0f) globalFriction-=0.005f;
+		else if((movement || lorenzMovement) && ((globalFriction <= 0.85f && !lorenzMovement) || globalFriction <= 0.75f)) globalFriction+=0.08f;
+	}
 	globalDisturbance--;	
 }
 ///////////////////////////////////////////////////////////
@@ -299,32 +311,28 @@ public void frame(NewChaosElement element) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // session callbacks
-
-public void onStartSession(PVector pos)
-{
-  println("onStartSession: " + pos);
+public void onStartSession(PVector pos) {
+	println("onStartSession: " + pos);
 }
 
-public void onEndSession()
-{
-  println("onEndSession: ");
+public void onEndSession() {
+	println("onEndSession: ");
 }
 
-public void onFocusSession(String strFocus,PVector pos,float progress)
-{
-  println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
+public void onFocusSession(String strFocus,PVector pos,float progress) {
+	println("onFocusSession: focus=" + strFocus + ",pos=" + pos + ",progress=" + progress);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 public void keyPressed() {
-	switch(key)
-	{
+	switch(key) {
 		case 'e':
 			// end sessions
-			kinectListener.endSession();
+			if(kinect) kinectListener.endSession();
 		break;
-		
+
 		case ' ':
-			fullScreen.enter(); 
+			ran=!ran;
+			globalFriction=0.7f;
 		break;
 	}
 }
@@ -757,6 +765,8 @@ class NewChaosElement extends CollisionElement {
 
 	float 							defaultRadius=50;
 
+	PVector 						ranPoint;
+
 	float							friction=1;
 	
 	float							pushForce=5;
@@ -850,6 +860,10 @@ class NewChaosElement extends CollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	public void move() {	
+		if(that.ran) {
+			moveRan();
+			return;
+		}
 		if(lorenz !=null) {
   			int index = lorenz.elements.indexOf(this);
 			if(!lorenz.allSet && index<=lorenz.count) {
@@ -880,14 +894,7 @@ class NewChaosElement extends CollisionElement {
 				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}
-/*			if(index-2 >=0 && index+1 < lorenz.elements.size()) {
-				element =(NewChaosElement) lorenz.elements.get(index+1);
-					element1 =(NewChaosElement) lorenz.elements.get(index-1);
-					element2 =(NewChaosElement) lorenz.elements.get(index-2);
-					line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
-//					curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 		}
-*/			}
 		stroke(0);
 
 	///	lorenz.moved=true;		
@@ -897,6 +904,26 @@ class NewChaosElement extends CollisionElement {
 			location.add(velocity);
 			lorenz.moved=true;
 		}
+	}
+///////////////////////////////////////////////////////////
+	public void moveRan() {
+		PVector oldLocation = location;
+		
+		boolean contained=that.ranShape.contains(location.x,location.y);
+		
+		if(!contained) {
+			velocity= PVector.sub(ranPoint, location);
+			velocity.mult(0.3f);
+		}
+		else velocity.mult(0.3f);
+		
+		location.add(velocity);
+		
+		if(false && !that.ranShape.contains(location.x,location.y)) {
+			RPoint[] points=that.ranShape.getIntersections(RShape.createLine(location.x,location.y,oldLocation.x,oldLocation.y));
+			location=new PVector(points[0].x, points[0].y,0);
+		}
+		
 	}
 ///////////////////////////////////////////////////////////
 	public void moveNormal() {
@@ -1017,14 +1044,14 @@ class KinectListener extends XnVPointControl
 		that.movement=true;
 		that.mouseElement.move(new PVector(x,y,0));
 
+		if(true) return;
 		pushMatrix();
-			
 			println(x+" "+y);
 			translate(x, y,0);
 			fill(200,0,0);
 			box(10);
+			noFill();
 		popMatrix();
-			 noFill();
   }
 ///////////////////////////////////////////////////////////
 
