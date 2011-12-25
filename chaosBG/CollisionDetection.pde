@@ -95,6 +95,7 @@ class CollisionMap {
 	CollisionElement					testElement;
 ///////////////////////////////////////////////////////////
 	int									x,y,x1,y1,x2,y2;
+	int									length, i, k;
 	PVector								quadrant,quadrant1,quadrant2,radius;
 
 ///////////////////////////////////////////////////////////
@@ -108,16 +109,16 @@ class CollisionMap {
 ///////////////////////////////////////////////////////////
 	void add(CollisionElement element) {	
 		PVector quadrant = getQuadrant(element.location);
-		int x= int(quadrant.x);
-		int y= int(quadrant.y);
+		x= int(quadrant.x);
+		y= int(quadrant.y);
 		
 		if(quadrants[x][y] == null) quadrants[x][y] = new ArrayList();
 		quadrants[x][y].add(element);
 	}
 ///////////////////////////////////////////////////////////
 	PVector getQuadrant(PVector location) {
-		int x = 1+int(floor(location.x/gridSize));
-		int y = 1+int(floor(location.y/gridSize));
+		x = 1+int(floor(location.x/gridSize));
+		y = 1+int(floor(location.y/gridSize));
 		
 		if(x < 1) x=0;
 		if(x > int(ceil(width/gridSize))) x=int(ceil(width/gridSize))+1;
@@ -128,9 +129,9 @@ class CollisionMap {
 	}
 ///////////////////////////////////////////////////////////
 	int size() {
-		int length=0;
-		for(int i=0; i< quadrants.length; i++)
-			for(int k=0; k< quadrants[i].length; k++)
+		length=0;
+		for(i=0; i< quadrants.length; i++)
+			for(k=0; k< quadrants[i].length; k++)
 				if(quadrants[i][k] != null)
 					length+=quadrants[i][k].size();
 		return length;	
@@ -161,9 +162,9 @@ class CollisionMap {
 		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
 			element.frameCollision();
 		
-		for(int i=x1; i<=x2; i++) 
+		for(i=x1; i<=x2; i++) 
 			if(i >=0 && i < quadrants.length)
-				for(int k=y1; k<=y2; k++) 
+				for(k=y1; k<=y2; k++) 
 					if(k >=0 && k < quadrants[i].length && quadrants[i][k] != null) {
 						Iterator itr=quadrants[i][k].iterator();
 						while(itr.hasNext()) {
