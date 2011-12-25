@@ -4,7 +4,8 @@ class MyCollisionElement extends CollisionElement{
 	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision){};
 	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision){};
 /////////////////////////////////////////////////////////
-	void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
+ 	void frameCollision(CollisionMap collisionMap) {};
+ 	void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		String type=element.getClass().getName();
 		
 		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);

@@ -1,21 +1,13 @@
 class CollisionDetection {
-	CollisionDetection					nextDetection;
-	
 	ArrayList<CollisionMap>				maps = new ArrayList();
 	ArrayList<CollisionElement>			elements = new ArrayList();
 	
 	CollisionMap						map;
 	CollisionElement 					element;
 ///////////////////////////////////////////////////////////
+	CollisionDetection() {}
 	CollisionDetection(ArrayList<CollisionElement> elements_) {
 		elements=(ArrayList<CollisionElement>) elements_.clone();
-		nextDetection= new CollisionDetection(true);
-	}
-	CollisionDetection() {
-		nextDetection= new CollisionDetection(true);
-	}
-	CollisionDetection(boolean flag) {
-		nextDetection=this;
 	}
 ///////////////////////////////////////////////////////////
 	void addElement (CollisionElement element) {
@@ -31,7 +23,7 @@ class CollisionDetection {
 			map.add(element);
 			return;			
 		}
-		map=new CollisionMap(nextDetection, element.actionRadius);
+		map=new CollisionMap(element.actionRadius);
 		map.add(element);	
 		maps.add(map);
 	}
@@ -46,20 +38,17 @@ class CollisionDetection {
 		return length;
 	}
 ///////////////////////////////////////////////////////////
+	int size() {
+		return elements.size();
+	}
+///////////////////////////////////////////////////////////
 	void mapElements() {
-		if(nextDetection.mapSize() == elements.size()) {
-			maps=(ArrayList<CollisionMap>)nextDetection.maps.clone();		
+		maps=new ArrayList();
+		Iterator itr= elements.iterator();
+		while(itr.hasNext()) {
+			element = (CollisionElement) itr.next();
+			addToMap(element);
 		}
-		else {
-			maps=new ArrayList();
-			Iterator itr= elements.iterator();
-			while(itr.hasNext()) {
-				element = (CollisionElement) itr.next();
-				addToMap(element);
-			}
-		}
-		nextDetection.maps= new ArrayList();
-		nextDetection.elements = new ArrayList();
 	}
 ///////////////////////////////////////////////////////////
 	void testElement (CollisionElement element) {
@@ -68,7 +57,6 @@ class CollisionDetection {
 			map=(CollisionMap) itr.next();
 			map.test(element);
 		}
-		nextDetection.addElement(element);
 	}
 ///////////////////////////////////////////////////////////
 	void removeElement (CollisionElement element) {
@@ -85,8 +73,6 @@ class CollisionDetection {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 class CollisionMap {
-	CollisionDetection					nextDetection;
-
 	ArrayList<CollisionElement>[][] 	quadrants;
 	int									columns;
 	int									rows;
@@ -99,8 +85,7 @@ class CollisionMap {
 	PVector								quadrant,quadrant1,quadrant2,radius;
 
 ///////////////////////////////////////////////////////////
-	CollisionMap(CollisionDetection nextDetection_, float gridSize_) {
-		nextDetection=nextDetection_;
+	CollisionMap(float gridSize_) {
 		gridSize=gridSize_;
 		columns=int(ceil(width/gridSize))+2;
 		rows=int(ceil(height/gridSize))+2;
@@ -159,8 +144,6 @@ class CollisionMap {
 		if(quadrants[x][y] != null && quadrants[x][y].contains(element))
 			quadrants[x][y].remove(element);
 				
-		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
-			element.frameCollision();
 		
 		for(i=x1; i<=x2; i++) 
 			if(i >=0 && i < quadrants.length)
@@ -174,6 +157,9 @@ class CollisionMap {
 							testElement.collision(element, this,false);
 						}
 					}
+					
+		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
+			element.frameCollision(this);
 	}
 }
 ///////////////////////////////////////////////////////////
@@ -194,7 +180,7 @@ abstract class CollisionElement {
 		actionRadius=actionRadius_;
 	}
 ///////////////////////////////////////////////////////////
-	void frameCollision() {};
+	abstract void frameCollision(CollisionMap collisionMap);
 	abstract void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision);
 }
 ///////////////////////////////////////////////////////////
