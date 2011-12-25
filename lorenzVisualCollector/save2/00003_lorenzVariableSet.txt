@@ -1,28 +1,28 @@
 variable 0: 
--1.1837502
+-1.1750002
 variable 1: 
-1.1416
+1.12
 variable 2: 
 4.49
 variable 3: 
 0.13
 variable 4: 
-1.154125
+1.4
 variable 5: 
--0.060750008
+-0.11362505
 variable 6: 
-0.10692125
+8.1E-4
 variable 7: 
-1.3225251
+1.47
 variable 8: 
-0.14400001
+0.13
 iterations: 
-1000.89996
+3575.6423
 zoom: 
 100.0
 rotateX: 
-4.6302586
+2.810076
 rotateY: 
-4293.589
+2016.2207
 rotateZ: 
 0.0
