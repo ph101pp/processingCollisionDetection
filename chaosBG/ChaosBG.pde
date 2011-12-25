@@ -49,6 +49,7 @@ boolean 							ran=true;
 float								ranStop;
 
 boolean								record=false;
+boolean								loop=true;
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
@@ -92,7 +93,7 @@ void setup() {
 }
 ///////////////////////////////////////////////////////////
 void draw() {
-	if(record) beginRaw(DXF, "output.dxf");
+	if(record) beginRaw(DXF, "exportVisuals/output_#####.dxf");
 	
 	println(frameRate);
 	translate(0,0,depth);
@@ -119,6 +120,7 @@ void draw() {
 		collisionDetection.testElement(elementL);
 		elementL.move();
 	}
+	
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
 	int k=0;
@@ -140,7 +142,6 @@ void draw() {
 		k++;
 	}
 
-  // do all your drawing here
 	if(record) {
 		endRaw();
 	    record = false;
@@ -227,18 +228,27 @@ void onFocusSession(String strFocus,PVector pos,float progress) {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 void keyPressed() {
-	switch(key) {
-		case 'e':
-			// end sessions
-			if(kinect) kinectListener.endSession();
+	switch(keyCode) {
+		case 68: //e
+			if(kinect) kinectListener.endSession();	// end sessions
 		break;
-		case 'r':
-			// end sessions
+		case 83: //s
 			record = true;
+			redraw();
 		break;
-		case ' ':
+		case 10: //Enter
 			ran=!ran;
 			globalFriction=0.7;
+		break;		
+		case 32: //Space
+			if(loop) {
+				noLoop();
+				loop=false;
+			}
+			else {
+				loop();
+				loop=true;
+			}
 		break;
 	}
 }
