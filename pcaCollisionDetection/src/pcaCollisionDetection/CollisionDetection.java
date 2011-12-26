@@ -70,11 +70,19 @@ public class CollisionDetection {
 		}
 	}
 ////////////////////////////////////////////////////////////////////////////////
+	public void testElement (CollisionElement element, boolean removeElement) {
+		_testElement(element, removeElement);
+	}
+////////////////////////////////////////////////////////////////////////////////
 	public void testElement (CollisionElement element) {
+		_testElement(element, true);	
+	}
+////////////////////////////////////////////////////////////////////////////////
+	private void _testElement (CollisionElement element, boolean removeElement) {
 		Iterator itr= maps.iterator();
 		while(itr.hasNext()) {
 			map=(CollisionMap) itr.next();
-			map.test(element);
+			map.test(element, removeElement);
 		}
 	}
 ////////////////////////////////////////////////////////////////////////////////

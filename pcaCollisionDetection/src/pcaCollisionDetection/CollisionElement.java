@@ -8,7 +8,7 @@ abstract public class CollisionElement {
 	public float 								actionRadius;
 ////////////////////////////////////////////////////////////////////////////////
 	abstract public void frameCollision(CollisionMap collisionMap);
-	abstract public void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision);
+	abstract public void collision(CollisionElement element, CollisionMap collisionMap, boolean testedElement);
 ////////////////////////////////////////////////////////////////////////////////
 	public void setActionRadius(float actionRadius_) {
 		actionRadius=actionRadius_;

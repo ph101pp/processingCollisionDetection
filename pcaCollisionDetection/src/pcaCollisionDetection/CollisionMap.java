@@ -58,15 +58,17 @@ public class CollisionMap{
 		return length;	
 	}
 ////////////////////////////////////////////////////////////////////////////////
-	public void test(CollisionElement element) {
+	public void test(CollisionElement element, boolean removeElement) {
 		quadrant = getQuadrant(element.location);		
 		x= (int) quadrant.x;
 		y= (int) quadrant.y;
-		x1= x-1;
-		y1= y-1;
-		x2= x+1;
-		y2= y+1;
-		if(element.actionRadius > gridSize) {
+		if(element.actionRadius <= gridSize) {
+			x1= x-2;
+			y1= y-2;
+			x2= x+2;
+			y2= y+2;
+		}
+		else {
 			radius = new PVector(element.actionRadius, element.actionRadius);
 			quadrant1 = getQuadrant(PVector.sub(element.location, radius));		
 			quadrant2 = getQuadrant(PVector.add(element.location, radius));		
@@ -76,8 +78,7 @@ public class CollisionMap{
 			x2= (int) quadrant2.x+1;
 			y2= (int) quadrant2.y+1;
 		}
-
-		if(quadrants[x][y] != null && quadrants[x][y].contains(element))
+		if(removeElement && quadrants[x][y] != null && quadrants[x][y].contains(element))
 			quadrants[x][y].remove(element);
 				
 		
@@ -89,6 +90,7 @@ public class CollisionMap{
 						while(itr.hasNext()) {
 							testElement= (CollisionElement) itr.next();
 							if(element.equals(testElement)) continue;
+							if(PVector.dist(element.location, testElement.location) > (testElement.actionRadius+element.actionRadius)) continue;
 							element.collision(testElement, this, true);
 							testElement.collision(element, this,false);
 						}
