@@ -2,29 +2,28 @@ package pcaCollisionDetection;
 import processing.core.*;
 import java.util.*;
 import java.lang.*;
-public class CollisionMap{
-	PApplet								that;
-	ArrayList<CollisionElement>[][] 	quadrants;
-	int									columns;
-	int									rows;
 
-	float 								gridSize; 
-	CollisionElement					testElement;
-///////////////////////////////////////////////////////////
-	int									x,y,x1,y1,x2,y2;
-	int									length, i, k;
-	PVector								quadrant,quadrant1,quadrant2,radius;
-	
-	Iterator							itr;
-///////////////////////////////////////////////////////////
-	CollisionMap(PApplet that_, float gridSize_) {
+public class CollisionMap{
+////////////////////////////////////////////////////////////////////////////////
+	public float 								gridSize; 
+	public int									columns;
+	public int									rows;
+////////////////////////////////////////////////////////////////////////////////
+	private PApplet								that;
+	private ArrayList<CollisionElement>[][] 	quadrants;
+	private CollisionElement					testElement;
+	private int									x,y,x1,y1,x2,y2,i,k,length;
+	private PVector								quadrant,quadrant1,quadrant2,radius;
+	private Iterator							itr;
+////////////////////////////////////////////////////////////////////////////////
+	public CollisionMap(PApplet that_, float gridSize_) {
 		that=that_;
 		gridSize=gridSize_;
 		columns=(int) Math.ceil(that.width/gridSize)+2;
 		rows=(int) Math.ceil(that.height/gridSize)+2;
     	quadrants= (ArrayList<CollisionElement>[][]) new ArrayList[columns][rows]; 
 	}
-///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 	public void add(CollisionElement element) {	
 		PVector quadrant = getQuadrant(element.location);
 		x= (int) quadrant.x;
@@ -33,7 +32,7 @@ public class CollisionMap{
 		if(quadrants[x][y] == null) quadrants[x][y] = new ArrayList();
 		quadrants[x][y].add(element);
 	}
-///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 	public PVector getQuadrant(PVector location) {
 		x = (int) Math.floor(location.x/gridSize)+1;
 		y = (int) Math.floor(location.y/gridSize)+1;
@@ -45,7 +44,12 @@ public class CollisionMap{
 			
 		return new PVector(x,y);	
 	}
-///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+	public ArrayList getQuadrantElements(int x, int y) {
+		if(quadrants[x][y] != null) return quadrants[x][y];
+		else return new ArrayList();
+	}
+////////////////////////////////////////////////////////////////////////////////
 	public int size() {
 		length=0;
 		for(i=0; i< quadrants.length; i++)
@@ -54,7 +58,7 @@ public class CollisionMap{
 					length+=quadrants[i][k].size();
 		return length;	
 	}
-///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 	public void test(CollisionElement element) {
 		quadrant = getQuadrant(element.location);		
 		x= (int) quadrant.x;
@@ -94,4 +98,5 @@ public class CollisionMap{
 		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
 			element.frameCollision(this);
 	}
+////////////////////////////////////////////////////////////////////////////////
 }
