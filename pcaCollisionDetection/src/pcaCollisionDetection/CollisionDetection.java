@@ -1,4 +1,4 @@
-package pcaCollision;
+package pcaCollisionDetection;
 import processing.core.*;
 import java.util.*;
 import java.lang.*;

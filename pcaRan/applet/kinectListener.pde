@@ -22,14 +22,14 @@
 class KinectListener extends XnVPointControl
 {
 
-	chaosBG					that;
+	pcaRan					that;
 	// NITE
 	XnVSessionManager 		sessionManager;
 	XnVFlowRouter     		flowRouter;
 	SimpleOpenNI     		context;
 ///////////////////////////////////////////////////////////
 	
-	KinectListener(chaosBG that_, SimpleOpenNI context_) {
+	KinectListener(pcaRan that_, SimpleOpenNI context_) {
 		that=that_;
 		context=context_;
 		// mirror is by default enabled
@@ -72,7 +72,7 @@ class KinectListener extends XnVPointControl
     println("OnPointCreate, handId: " + cxt.getNID());
 		float x=map(cxt.getPtPosition().getX(), -320,320,0,width);
 		float y=map(cxt.getPtPosition().getY(), 240,-240,0,height);
-		that.mouseElement =new BlobElement(that,new PVector(x,y,0));
+		that.mouseElement =new ElementBlob(that,new PVector(x,y,0));
 		collisionDetection.addElement(that.mouseElement);
 //		globalDisturbance=int(random(0,3));
     

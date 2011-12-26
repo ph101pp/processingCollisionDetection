@@ -12,7 +12,7 @@ import geomerative.*;
 
 
 ///////////////////////////////////////////////////////////
-chaosBG								that;
+pcaRan								that;
 FullScreen 							fullScreen;
 
 ///////////
@@ -27,13 +27,13 @@ boolean								kinect = true;
 ///////////
 
 ArrayList<CollisionElement> 		elements = new ArrayList();
-ArrayList<LorenzElement> 			lorenzElements = new ArrayList();
+ArrayList<ElementLorenz> 			lorenzElements = new ArrayList();
 CollisionDetection					collisionDetection;
 CollisionElement					element;
-NewChaosElement						elementN;
-LorenzElement						elementL;
+ElementChaos						elementN;
+ElementLorenz						elementL;
 int									globalDisturbance=0;
-BlobElement							mouseElement=null;
+ElementBlob							mouseElement=null;
 
 			
 PVector								mousePos=new PVector(mouseX,mouseY);
@@ -79,7 +79,7 @@ void setup() {
 
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
-		elementN=new NewChaosElement(this);
+		elementN=new ElementChaos(this);
 		
 		while(!ranShape.contains(elementN.location.x,elementN.location.y))
 			elementN.location = new PVector (random(width), random(height),random(depth));
@@ -107,7 +107,7 @@ void draw() {
 //	Mouse 'n' Blobs
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
-		elementL= (LorenzElement) lorenzElements.get(i);
+		elementL= (ElementLorenz) lorenzElements.get(i);
 		if(elementL.moved==false) {
 			elementL.allSet=true;
 		}
@@ -129,7 +129,7 @@ void draw() {
 	Iterator itr2 = elements.iterator(); 
 	k=0;
 	while(itr2.hasNext() && (true || !ran || k<=1000)) {
-		elementN= (NewChaosElement)itr2.next();
+		elementN= (ElementChaos)itr2.next();
 		elementN.move();
 		if(elementN.lorenz==null ) frame(elementN);
 		elementN.lorenz=null;
@@ -145,7 +145,7 @@ void mouseElement() {
 	if(mouseMoved > 0) movement=true;
 
 	if(mousePressed && mouseElement==null) {
-		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
+		mouseElement =new ElementBlob(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
 //		globalDisturbance=int(random(0,3));
 	}
@@ -168,8 +168,8 @@ void environment() {
 	globalDisturbance--;	
 }
 ///////////////////////////////////////////////////////////
-void frame(NewChaosElement element) {
-	NewChaosElement thisElement = (NewChaosElement) element;
+void frame(ElementChaos element) {
+	ElementChaos thisElement = (ElementChaos) element;
 	
 	float border =  30;
 	if(element.location.x < 0-border) {

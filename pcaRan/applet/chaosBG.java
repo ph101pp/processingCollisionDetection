@@ -25,43 +25,43 @@ import java.util.*;
 import java.util.zip.*; 
 import java.util.regex.*; 
 
-public class chaosBG extends PApplet {
+public class pcaRan extends PApplet {
 
-class BlobElement extends CollisionElement {
+class ElementBlob extends CollisionElement {
 	float 							defaultRadius=180;
 
 	int								startFrame;
 	
 	float							moved;
 	
-	LorenzElement					lorenzElement;
+	ElementLorenz					lorenzElement;
 		
 	boolean							shapeSet;
 	
 //	PROGRAMM
 	PVector newLocation;
 ///////////////////////////////////////////////////////////
-	BlobElement(chaosBG that_, PVector location_, float actionRadius_) {
+	ElementBlob(pcaRan that_, PVector location_, float actionRadius_) {
 		that=that_;
 		actionRadius=actionRadius_;
 		location = location_;
 		startFrame=frameCount;
 
-		lorenzElement= new LorenzElement(that, location, this);
+		lorenzElement= new ElementLorenz(that, location, this);
 	}
-	BlobElement(chaosBG that_, PVector location_) {
+	ElementBlob(pcaRan that_, PVector location_) {
 		that=that_;
 		actionRadius=defaultRadius;
 		location = location_;
 		startFrame=frameCount;
 
-		lorenzElement= new LorenzElement(that, location,this);
+		lorenzElement= new ElementLorenz(that, location,this);
 	}
 ///////////////////////////////////////////////////////////
 	public void frameCollision() {}
-	public void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(ElementChaos element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {}
 	public void move(){};
 ///////////////////////////////////////////////////////////
 	
@@ -74,7 +74,7 @@ class BlobElement extends CollisionElement {
 
 		location = newLocation;
 		
-		if(lorenzElement.allSet == true) resetLorenzElement();
+		if(lorenzElement.allSet == true) resetElementLorenz();
 	
 		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 20)) {
 			startFrame=frameCount;
@@ -92,10 +92,10 @@ class BlobElement extends CollisionElement {
 		
 	}
 ///////////////////////////////////////////////////////////
-	public void resetLorenzElement(){
+	public void resetElementLorenz(){
 		startFrame=frameCount;
 		shapeSet=false;
-		lorenzElement=new LorenzElement(that, location, this);
+		lorenzElement=new ElementLorenz(that, location, this);
 	}
 ///////////////////////////////////////////////////////////
 	public void finalize() {
@@ -117,7 +117,7 @@ class BlobElement extends CollisionElement {
 
 
 ///////////////////////////////////////////////////////////
-chaosBG								that;
+pcaRan								that;
 FullScreen 							fullScreen;
 
 ///////////
@@ -132,13 +132,13 @@ boolean								kinect = true;
 ///////////
 
 ArrayList<CollisionElement> 		elements = new ArrayList();
-ArrayList<LorenzElement> 			lorenzElements = new ArrayList();
+ArrayList<ElementLorenz> 			lorenzElements = new ArrayList();
 CollisionDetection					collisionDetection;
 CollisionElement					element;
-NewChaosElement						elementN;
-LorenzElement						elementL;
+ElementChaos						elementN;
+ElementLorenz						elementL;
 int									globalDisturbance=0;
-BlobElement							mouseElement=null;
+ElementBlob							mouseElement=null;
 
 			
 PVector								mousePos=new PVector(mouseX,mouseY);
@@ -184,7 +184,7 @@ public void setup() {
 
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
-		elementN=new NewChaosElement(this);
+		elementN=new ElementChaos(this);
 		
 		while(!ranShape.contains(elementN.location.x,elementN.location.y))
 			elementN.location = new PVector (random(width), random(height),random(depth));
@@ -212,7 +212,7 @@ public void draw() {
 //	Mouse 'n' Blobs
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
-		elementL= (LorenzElement) lorenzElements.get(i);
+		elementL= (ElementLorenz) lorenzElements.get(i);
 		if(elementL.moved==false) {
 			elementL.allSet=true;
 		}
@@ -234,7 +234,7 @@ public void draw() {
 	Iterator itr2 = elements.iterator(); 
 	k=0;
 	while(itr2.hasNext() && (true || !ran || k<=1000)) {
-		elementN= (NewChaosElement)itr2.next();
+		elementN= (ElementChaos)itr2.next();
 		elementN.move();
 		if(elementN.lorenz==null ) frame(elementN);
 		elementN.lorenz=null;
@@ -250,7 +250,7 @@ public void mouseElement() {
 	if(mouseMoved > 0) movement=true;
 
 	if(mousePressed && mouseElement==null) {
-		mouseElement =new BlobElement(that, new PVector(mouseX,mouseY));
+		mouseElement =new ElementBlob(that, new PVector(mouseX,mouseY));
 		collisionDetection.addElement(mouseElement);
 //		globalDisturbance=int(random(0,3));
 	}
@@ -273,8 +273,8 @@ public void environment() {
 	globalDisturbance--;	
 }
 ///////////////////////////////////////////////////////////
-public void frame(NewChaosElement element) {
-	NewChaosElement thisElement = (NewChaosElement) element;
+public void frame(ElementChaos element) {
+	ElementChaos thisElement = (ElementChaos) element;
 	
 	float border =  30;
 	if(element.location.x < 0-border) {
@@ -338,7 +338,7 @@ public void keyPressed() {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 class CollisionDetection {
-	chaosBG								that;
+	pcaRan								that;
 	CollisionDetection					nextDetection;
 	
 	ArrayList<CollisionMap>				maps = new ArrayList();
@@ -347,16 +347,16 @@ class CollisionDetection {
 	CollisionMap						map;
 	CollisionElement 					element;
 ///////////////////////////////////////////////////////////
-	CollisionDetection(chaosBG that_,ArrayList<CollisionElement> elements_) {
+	CollisionDetection(pcaRan that_,ArrayList<CollisionElement> elements_) {
 		that=that_;
 		elements=(ArrayList<CollisionElement>) elements_.clone();
 		nextDetection= new CollisionDetection(that, true);
 	}
-	CollisionDetection(chaosBG that_) {
+	CollisionDetection(pcaRan that_) {
 		that=that_;
 		nextDetection= new CollisionDetection(that, true);
 	}
-	CollisionDetection(chaosBG that_, boolean flag) {
+	CollisionDetection(pcaRan that_, boolean flag) {
 		that=that_;
 		nextDetection=this;
 	}
@@ -428,7 +428,7 @@ class CollisionDetection {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 class CollisionMap {
-	chaosBG								that;
+	pcaRan								that;
 	CollisionDetection					nextDetection;
 
 	ArrayList<CollisionElement>[][] 	quadrants;
@@ -442,7 +442,7 @@ class CollisionMap {
 	PVector								quadrant,quadrant1,quadrant2,radius;
 
 ///////////////////////////////////////////////////////////
-	CollisionMap(chaosBG that_, CollisionDetection nextDetection_, float gridSize_) {
+	CollisionMap(pcaRan that_, CollisionDetection nextDetection_, float gridSize_) {
 		that=that_;
 		nextDetection=nextDetection_;
 		gridSize=gridSize_;
@@ -529,7 +529,7 @@ class CollisionMap {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 abstract class CollisionElement {
-	chaosBG								that;
+	pcaRan								that;
 	PVector 							location = new PVector(0,0,0);
 	PVector								velocity = new PVector(0,0,0);
 	float 								actionRadius;
@@ -537,9 +537,9 @@ abstract class CollisionElement {
 ///////////////////////////////////////////////////////////
 	public abstract void frameCollision();
 	public abstract void move();
-	public abstract void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision);
-	public abstract void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision);
-	public abstract void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision);
+	public abstract void collide(ElementChaos element, CollisionMap collisionMap, boolean mainCollision);
+	public abstract void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision);
+	public abstract void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision);
 	
 
 ///////////////////////////////////////////////////////////
@@ -550,9 +550,9 @@ abstract class CollisionElement {
 	public void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		String type=element.getClass().getName();
 		
-		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$LorenzElement") 	collide((LorenzElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$BlobElement") 		collide((BlobElement) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementChaos") 	collide((ElementChaos) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementLorenz") 	collide((ElementLorenz) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementBlob") 		collide((ElementBlob) element, collisionMap, mainCollision);
 	}	
 }
 ///////////////////////////////////////////////////////////
@@ -563,8 +563,8 @@ abstract class CollisionElement {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
-class LorenzElement extends CollisionElement {
-	BlobElement						blob;
+class ElementLorenz extends CollisionElement {
+	ElementBlob						blob;
 
 	float 							defaultRadius=180;
 	int								variableSets=19;
@@ -592,7 +592,7 @@ class LorenzElement extends CollisionElement {
 	float							moveUp=0.8f;
 	
 ///////////////////////////////////////////////////////////
-	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_, float actionRadius_) {
+	ElementLorenz(pcaRan that_, PVector location_, ElementBlob blob_, float actionRadius_) {
 		that=that_;
 		blob=blob_;
 		actionRadius=actionRadius_;
@@ -602,7 +602,7 @@ class LorenzElement extends CollisionElement {
 		getVariableSet();
 		generatePoints();
 	}
-	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_) {
+	ElementLorenz(pcaRan that_, PVector location_, ElementBlob blob_) {
 		that=that_;
 		blob=blob_;
 		actionRadius=defaultRadius;
@@ -615,7 +615,7 @@ class LorenzElement extends CollisionElement {
 ///////////////////////////////////////////////////////////
 	public void frameCollision() {}
 ///////////////////////////////////////////////////////////
-	public void collide(NewChaosElement element, CollisionMap collisionMap,  boolean mainCollision) {
+	public void collide(ElementChaos element, CollisionMap collisionMap,  boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 	
 		if(!allSet) {	
@@ -630,8 +630,8 @@ class LorenzElement extends CollisionElement {
 		
  	}
 ///////////////////////////////////////////////////////////
-	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {}
+	public void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	public void move() {
 		count = (frameCount-startFrame)*100;
@@ -761,7 +761,7 @@ class LorenzElement extends CollisionElement {
 	}
 }
 
-class NewChaosElement extends CollisionElement {
+class ElementChaos extends CollisionElement {
 
 	float 							defaultRadius=50;
 
@@ -773,23 +773,23 @@ class NewChaosElement extends CollisionElement {
 	
 	int								disturbance=0;
 	
-	LorenzElement					lorenz=null;
+	ElementLorenz					lorenz=null;
 	
-	NewChaosElement 				element1, element2;
+	ElementChaos 				element1, element2;
 	///////////////////////////////////////////////////////////
-	NewChaosElement(chaosBG that_, float actionRadius_) {
+	ElementChaos(pcaRan that_, float actionRadius_) {
 		that=that_;
 		actionRadius=actionRadius_;
 		location = new PVector (random(width), random(height),random(that.depth));
 	}
-	NewChaosElement(chaosBG that_) {
+	ElementChaos(pcaRan that_) {
 		that=that_;
 		actionRadius=defaultRadius;
 		location = new PVector (random(width), random(height),random(that.depth));
 	}
 	
 ///////////////////////////////////////////////////////////
-	public void collide (NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {
+	public void collide (ElementChaos element, CollisionMap collisionMap, boolean mainCollision) {
 		PVector newVelocity;
 		float distance=PVector.dist(location, element.location);
 		if(distance > actionRadius) return;
@@ -821,7 +821,7 @@ class NewChaosElement extends CollisionElement {
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	public void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {
+	public void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		
 		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8f) return;
@@ -839,7 +839,7 @@ class NewChaosElement extends CollisionElement {
 		disturbance=PApplet.parseInt(random(0,2));
 	}
 ///////////////////////////////////////////////////////////
-	public void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {
+	public void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {
 		if(!element.allSet) {
 			if(element.elements.contains(this)) lorenz= element;	
 			return;
@@ -886,11 +886,11 @@ class NewChaosElement extends CollisionElement {
 	//	stroke(255,0,0);
 		if(velocity.mag() <=1) {
 			if(index-1 >=0 && index+2 < lorenz.elements.size()) {
-				element =(NewChaosElement) lorenz.elements.get(index-1);
+				element =(ElementChaos) lorenz.elements.get(index-1);
 				
 				
-				element1 =(NewChaosElement) lorenz.elements.get(index+1);
-				element2 =(NewChaosElement) lorenz.elements.get(index+2);
+				element1 =(ElementChaos) lorenz.elements.get(index+1);
+				element2 =(ElementChaos) lorenz.elements.get(index+2);
 				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}
@@ -977,14 +977,14 @@ class NewChaosElement extends CollisionElement {
 class KinectListener extends XnVPointControl
 {
 
-	chaosBG					that;
+	pcaRan					that;
 	// NITE
 	XnVSessionManager 		sessionManager;
 	XnVFlowRouter     		flowRouter;
 	SimpleOpenNI     		context;
 ///////////////////////////////////////////////////////////
 	
-	KinectListener(chaosBG that_, SimpleOpenNI context_) {
+	KinectListener(pcaRan that_, SimpleOpenNI context_) {
 		that=that_;
 		context=context_;
 		// mirror is by default enabled
@@ -1027,7 +1027,7 @@ class KinectListener extends XnVPointControl
     println("OnPointCreate, handId: " + cxt.getNID());
 		float x=map(cxt.getPtPosition().getX(), -320,320,0,width);
 		float y=map(cxt.getPtPosition().getY(), 240,-240,0,height);
-		that.mouseElement =new BlobElement(that,new PVector(x,y,0));
+		that.mouseElement =new ElementBlob(that,new PVector(x,y,0));
 		collisionDetection.addElement(that.mouseElement);
 //		globalDisturbance=int(random(0,3));
     
@@ -1067,6 +1067,6 @@ class KinectListener extends XnVPointControl
 
 }
   static public void main(String args[]) {
-    PApplet.main(new String[] { "--bgcolor=#FFFFFF", "chaosBG" });
+    PApplet.main(new String[] { "--bgcolor=#FFFFFF", "pcaRan" });
   }
 }

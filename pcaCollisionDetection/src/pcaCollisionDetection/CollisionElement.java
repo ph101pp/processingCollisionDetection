@@ -1,4 +1,4 @@
-package pcaCollision;
+package pcaCollisionDetection;
 import processing.core.PVector;
 
 abstract public class CollisionElement {

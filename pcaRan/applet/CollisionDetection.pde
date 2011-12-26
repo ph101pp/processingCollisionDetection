@@ -1,5 +1,5 @@
 class CollisionDetection {
-	chaosBG								that;
+	pcaRan								that;
 	CollisionDetection					nextDetection;
 	
 	ArrayList<CollisionMap>				maps = new ArrayList();
@@ -8,16 +8,16 @@ class CollisionDetection {
 	CollisionMap						map;
 	CollisionElement 					element;
 ///////////////////////////////////////////////////////////
-	CollisionDetection(chaosBG that_,ArrayList<CollisionElement> elements_) {
+	CollisionDetection(pcaRan that_,ArrayList<CollisionElement> elements_) {
 		that=that_;
 		elements=(ArrayList<CollisionElement>) elements_.clone();
 		nextDetection= new CollisionDetection(that, true);
 	}
-	CollisionDetection(chaosBG that_) {
+	CollisionDetection(pcaRan that_) {
 		that=that_;
 		nextDetection= new CollisionDetection(that, true);
 	}
-	CollisionDetection(chaosBG that_, boolean flag) {
+	CollisionDetection(pcaRan that_, boolean flag) {
 		that=that_;
 		nextDetection=this;
 	}
@@ -89,7 +89,7 @@ class CollisionDetection {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 class CollisionMap {
-	chaosBG								that;
+	pcaRan								that;
 	CollisionDetection					nextDetection;
 
 	ArrayList<CollisionElement>[][] 	quadrants;
@@ -103,7 +103,7 @@ class CollisionMap {
 	PVector								quadrant,quadrant1,quadrant2,radius;
 
 ///////////////////////////////////////////////////////////
-	CollisionMap(chaosBG that_, CollisionDetection nextDetection_, float gridSize_) {
+	CollisionMap(pcaRan that_, CollisionDetection nextDetection_, float gridSize_) {
 		that=that_;
 		nextDetection=nextDetection_;
 		gridSize=gridSize_;
@@ -190,7 +190,7 @@ class CollisionMap {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 abstract class CollisionElement {
-	chaosBG								that;
+	pcaRan								that;
 	PVector 							location = new PVector(0,0,0);
 	PVector								velocity = new PVector(0,0,0);
 	float 								actionRadius;
@@ -198,9 +198,9 @@ abstract class CollisionElement {
 ///////////////////////////////////////////////////////////
 	abstract void frameCollision();
 	abstract void move();
-	abstract void collide(NewChaosElement element, CollisionMap collisionMap, boolean mainCollision);
-	abstract void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision);
-	abstract void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(ElementChaos element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision);
+	abstract void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision);
 	
 
 ///////////////////////////////////////////////////////////
@@ -211,9 +211,9 @@ abstract class CollisionElement {
 	void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		String type=element.getClass().getName();
 		
-		if(type == "chaosBG$NewChaosElement") 	collide((NewChaosElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$LorenzElement") 	collide((LorenzElement) element, collisionMap, mainCollision);
-		if(type == "chaosBG$BlobElement") 		collide((BlobElement) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementChaos") 	collide((ElementChaos) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementLorenz") 	collide((ElementLorenz) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementBlob") 		collide((ElementBlob) element, collisionMap, mainCollision);
 	}	
 }
 ///////////////////////////////////////////////////////////

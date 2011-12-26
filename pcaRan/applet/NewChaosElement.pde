@@ -1,5 +1,5 @@
 
-class NewChaosElement extends CollisionElement {
+class ElementChaos extends CollisionElement {
 
 	float 							defaultRadius=50;
 
@@ -11,23 +11,23 @@ class NewChaosElement extends CollisionElement {
 	
 	int								disturbance=0;
 	
-	LorenzElement					lorenz=null;
+	ElementLorenz					lorenz=null;
 	
-	NewChaosElement 				element1, element2;
+	ElementChaos 				element1, element2;
 	///////////////////////////////////////////////////////////
-	NewChaosElement(chaosBG that_, float actionRadius_) {
+	ElementChaos(pcaRan that_, float actionRadius_) {
 		that=that_;
 		actionRadius=actionRadius_;
 		location = new PVector (random(width), random(height),random(that.depth));
 	}
-	NewChaosElement(chaosBG that_) {
+	ElementChaos(pcaRan that_) {
 		that=that_;
 		actionRadius=defaultRadius;
 		location = new PVector (random(width), random(height),random(that.depth));
 	}
 	
 ///////////////////////////////////////////////////////////
-	void collide (NewChaosElement element, CollisionMap collisionMap, boolean mainCollision) {
+	void collide (ElementChaos element, CollisionMap collisionMap, boolean mainCollision) {
 		PVector newVelocity;
 		float distance=PVector.dist(location, element.location);
 		if(distance > actionRadius) return;
@@ -59,7 +59,7 @@ class NewChaosElement extends CollisionElement {
 //		println(element1.velocity);
 	}
 ///////////////////////////////////////////////////////////
-	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {
+	void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 		
 		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8) return;
@@ -77,7 +77,7 @@ class NewChaosElement extends CollisionElement {
 		disturbance=int(random(0,2));
 	}
 ///////////////////////////////////////////////////////////
-	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {
+	void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {
 		if(!element.allSet) {
 			if(element.elements.contains(this)) lorenz= element;	
 			return;
@@ -124,11 +124,11 @@ class NewChaosElement extends CollisionElement {
 	//	stroke(255,0,0);
 		if(velocity.mag() <=1) {
 			if(index-1 >=0 && index+2 < lorenz.elements.size()) {
-				element =(NewChaosElement) lorenz.elements.get(index-1);
+				element =(ElementChaos) lorenz.elements.get(index-1);
 				
 				
-				element1 =(NewChaosElement) lorenz.elements.get(index+1);
-				element2 =(NewChaosElement) lorenz.elements.get(index+2);
+				element1 =(ElementChaos) lorenz.elements.get(index+1);
+				element2 =(ElementChaos) lorenz.elements.get(index+2);
 				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}

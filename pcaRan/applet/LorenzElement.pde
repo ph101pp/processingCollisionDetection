@@ -1,5 +1,5 @@
-class LorenzElement extends CollisionElement {
-	BlobElement						blob;
+class ElementLorenz extends CollisionElement {
+	ElementBlob						blob;
 
 	float 							defaultRadius=180;
 	int								variableSets=19;
@@ -27,7 +27,7 @@ class LorenzElement extends CollisionElement {
 	float							moveUp=0.8;
 	
 ///////////////////////////////////////////////////////////
-	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_, float actionRadius_) {
+	ElementLorenz(pcaRan that_, PVector location_, ElementBlob blob_, float actionRadius_) {
 		that=that_;
 		blob=blob_;
 		actionRadius=actionRadius_;
@@ -37,7 +37,7 @@ class LorenzElement extends CollisionElement {
 		getVariableSet();
 		generatePoints();
 	}
-	LorenzElement(chaosBG that_, PVector location_, BlobElement blob_) {
+	ElementLorenz(pcaRan that_, PVector location_, ElementBlob blob_) {
 		that=that_;
 		blob=blob_;
 		actionRadius=defaultRadius;
@@ -50,7 +50,7 @@ class LorenzElement extends CollisionElement {
 ///////////////////////////////////////////////////////////
 	void frameCollision() {}
 ///////////////////////////////////////////////////////////
-	void collide(NewChaosElement element, CollisionMap collisionMap,  boolean mainCollision) {
+	void collide(ElementChaos element, CollisionMap collisionMap,  boolean mainCollision) {
 		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
 	
 		if(!allSet) {	
@@ -65,8 +65,8 @@ class LorenzElement extends CollisionElement {
 		
  	}
 ///////////////////////////////////////////////////////////
-	void collide(LorenzElement element, CollisionMap collisionMap, boolean mainCollision) {}
-	void collide(BlobElement element, CollisionMap collisionMap, boolean mainCollision) {}
+	void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {}
+	void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {}
 ///////////////////////////////////////////////////////////
 	void move() {
 		count = (frameCount-startFrame)*100;
