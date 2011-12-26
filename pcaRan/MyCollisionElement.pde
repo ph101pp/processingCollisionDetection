@@ -10,6 +10,6 @@ class MyCollisionElement extends CollisionElement{
 		
 		if(type == "pcaRan$ElementChaos") 	collide((ElementChaos) element, collisionMap, mainCollision);
 		if(type == "pcaRan$ElementLorenz") 	collide((ElementLorenz) element, collisionMap, mainCollision);
-		if(type == "pcaRan$ElementBlob") 		collide((ElementBlob) element, collisionMap, mainCollision);
+		if(type == "pcaRan$ElementBlob") 	collide((ElementBlob) element, collisionMap, mainCollision);
 	}	
 }
