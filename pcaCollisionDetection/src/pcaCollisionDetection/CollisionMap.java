@@ -6,8 +6,7 @@ import java.lang.*;
 public class CollisionMap{
 ////////////////////////////////////////////////////////////////////////////////
 	public float 								gridSize; 
-	public int									columns;
-	public int									rows;
+	public int									columns, rows;
 ////////////////////////////////////////////////////////////////////////////////
 	private PApplet								that;
 	private ArrayList<CollisionElement>[][] 	quadrants;
