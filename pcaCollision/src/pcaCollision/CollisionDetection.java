@@ -11,8 +11,6 @@ public class CollisionDetection {
 	
 	CollisionMap						map;
 	CollisionElement 					element;
-	
-	Iterator							itr;
 ///////////////////////////////////////////////////////////
 	public CollisionDetection(PApplet that_) {
 		that=that_;
@@ -20,12 +18,12 @@ public class CollisionDetection {
 	}
 	public CollisionDetection(PApplet that_, ArrayList<CollisionElement> elements_) {
 		that=that_;
-		elements=(ArrayList<CollisionElement>) elements_.clone();
-    	that.registerPre(this);
+		elements=(ArrayList<CollisionElement>) elements_.clone(); 
+	   	that.registerPre(this);
 	}
 ///////////////////////////////////////////////////////////
 	public void pre() {
-		System.out.println("preprepre");
+		mapElements();
 	}
 ///////////////////////////////////////////////////////////
 	public void addElement (CollisionElement element) {
@@ -34,7 +32,7 @@ public class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	void addToMap(CollisionElement element) {
-		itr= maps.iterator();
+		Iterator itr= maps.iterator();
 		while(itr.hasNext()) {
 			map=(CollisionMap) itr.next();
 			if(map.gridSize!=element.actionRadius) continue;
@@ -48,7 +46,7 @@ public class CollisionDetection {
 ///////////////////////////////////////////////////////////
 	public int mapSize() {
 		int length=0;
-		itr= maps.iterator();
+		Iterator itr= maps.iterator();
 		while(itr.hasNext()) {
 			map=(CollisionMap) itr.next();
 			length+=map.size();
@@ -59,9 +57,9 @@ public class CollisionDetection {
 		return elements.size();
 	}
 ///////////////////////////////////////////////////////////
-	void mapElements() {
+	public void mapElements() {
 		maps=new ArrayList();
-		itr= elements.iterator();
+		Iterator itr= elements.iterator();
 		while(itr.hasNext()) {
 			element = (CollisionElement) itr.next();
 			addToMap(element);
@@ -69,7 +67,7 @@ public class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	public void testElement (CollisionElement element) {
-		itr= maps.iterator();
+		Iterator itr= maps.iterator();
 		while(itr.hasNext()) {
 			map=(CollisionMap) itr.next();
 			map.test(element);
@@ -77,7 +75,11 @@ public class CollisionDetection {
 	}
 ///////////////////////////////////////////////////////////
 	public void removeElement (CollisionElement element) {
-		elements.remove(element);
+		remove(element);
 		mapElements();
+	}
+///////////////////////////////////////////////////////////
+	public void remove(CollisionElement element) {
+		elements.remove(element);
 	}
 }

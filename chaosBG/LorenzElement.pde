@@ -106,7 +106,7 @@ class LorenzElement extends MyCollisionElement {
 	
 	void remove(){
 		that.lorenzElements.remove(this);
-		that.collisionDetection.elements.remove(this);
+		that.collisionDetection.remove(this);
 	}
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////

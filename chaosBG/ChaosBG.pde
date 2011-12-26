@@ -10,6 +10,7 @@ import japplemenubar.*;
 import SimpleOpenNI.*;
 import geomerative.*;
 import processing.dxf.*;
+import pcaCollision.*;
 
 ///////////////////////////////////////////////////////////
 chaosBG								that;
@@ -77,9 +78,6 @@ void setup() {
  	ranShape.scale(map(width*height, 1280*720,1680*1050 ,0.8, 0.5));
  	ranShape.translate(width/2,height/2);
 
-  	
-	
-
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
 		elementN=new NewChaosElement(this);
@@ -89,7 +87,7 @@ void setup() {
 		elementN.ranPoint=new PVector(elementN.location.x,elementN.location.y,0);
 		elements.add(elementN);
 	}
-	collisionDetection = new CollisionDetection(elements);
+	collisionDetection = new CollisionDetection(this, elements);
 }
 ///////////////////////////////////////////////////////////
 void draw() {
@@ -106,9 +104,6 @@ void draw() {
 	if(kinect) kinectListener.update();
 	else mouseElement();
 	
-	collisionDetection.mapElements();
-	
-
 //	Mouse 'n' Blobs
 	Iterator itr0 = lorenzElements.iterator();
 	for(int i=lorenzElements.size()-1; i>=0; i--) {
@@ -163,7 +158,7 @@ void mouseElement() {
 	}
 	else if(!mousePressed && mouseElement != null) {
 		mouseElement.finalize();
-		collisionDetection.elements.remove(mouseElement);
+		collisionDetection.remove(mouseElement);
 		mouseElement = null;
 	}
 }

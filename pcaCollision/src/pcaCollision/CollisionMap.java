@@ -2,7 +2,7 @@ package pcaCollision;
 import processing.core.*;
 import java.util.*;
 import java.lang.*;
-class CollisionMap{
+public class CollisionMap{
 	PApplet								that;
 	ArrayList<CollisionElement>[][] 	quadrants;
 	int									columns;
