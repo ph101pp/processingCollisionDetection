@@ -7,7 +7,6 @@ abstract public class CollisionElement {
 	public PVector								velocity = new PVector(0,0,0);
 	public float 								actionRadius;
 ////////////////////////////////////////////////////////////////////////////////
-	abstract public void frameCollision(CollisionMap collisionMap);
 	abstract public void collision(CollisionElement element, CollisionMap collisionMap, boolean testedElement);
 ////////////////////////////////////////////////////////////////////////////////
 	public void setActionRadius(float actionRadius_) {

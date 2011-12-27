@@ -95,9 +95,6 @@ public class CollisionMap{
 							testElement.collision(element, this,false);
 						}
 					}
-					
-		if(x <= 1 || x >= rows-2 || y <= 1 || y >= columns-2) 
-			element.frameCollision(this);
 	}
 ////////////////////////////////////////////////////////////////////////////////
 }
