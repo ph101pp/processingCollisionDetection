@@ -11,8 +11,8 @@ public class CollisionMap{
 	private PApplet								that;
 	private ArrayList<CollisionElement>[][] 	quadrants;
 	private CollisionElement					testElement;
-	private int									x,y,x1,y1,x2,y2,i,k,length;
-	private PVector								quadrant,quadrant1,quadrant2,radius;
+	private int									x,y,i,k,length;
+	private PVector								q, q1, q2, radius;
 	private Iterator							itr;
 ////////////////////////////////////////////////////////////////////////////////
 	public CollisionMap(PApplet that_, float gridSize_) {
@@ -59,32 +59,27 @@ public class CollisionMap{
 	}
 ////////////////////////////////////////////////////////////////////////////////
 	public void test(CollisionElement element, boolean removeElement) {
-		quadrant = getQuadrant(element.location);		
-		x= (int) quadrant.x;
-		y= (int) quadrant.y;
+		q = getQuadrant(element.location);		
+		x= (int) q.x;
+		y= (int) q.y;
+		
 		if(element.actionRadius <= gridSize) {
-			x1= x-2;
-			y1= y-2;
-			x2= x+2;
-			y2= y+2;
+			q1 = PVector.sub(q, new PVector(2,2));
+			q2 = PVector.add(q, new PVector(2,2));
 		}
 		else {
 			radius = new PVector(element.actionRadius, element.actionRadius);
-			quadrant1 = getQuadrant(PVector.sub(element.location, radius));		
-			quadrant2 = getQuadrant(PVector.add(element.location, radius));		
-		
-			x1= (int) quadrant1.x-1;
-			y1= (int) quadrant1.y-1;
-			x2= (int) quadrant2.x+1;
-			y2= (int) quadrant2.y+1;
+			q1 = getQuadrant(PVector.sub(element.location, radius));		
+			q2 = getQuadrant(PVector.add(element.location, radius));		
+			q1.sub(new PVector(1,1));
+			q2.add(new PVector(1,1));
 		}
 		if(removeElement && quadrants[x][y] != null && quadrants[x][y].contains(element))
 			quadrants[x][y].remove(element);
 				
-		
-		for(i=x1; i<=x2; i++) 
+		for(i=(int) q1.x; i<=q2.x; i++) 
 			if(i >=0 && i < quadrants.length)
-				for(k=y1; k<=y2; k++) 
+				for(k=(int) q1.y; k<=q2.y; k++) 
 					if(k >=0 && k < quadrants[i].length && quadrants[i][k] != null) {
 						itr=quadrants[i][k].iterator();
 						while(itr.hasNext()) {
