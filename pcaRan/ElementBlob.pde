@@ -1,5 +1,5 @@
 class ElementBlob extends MyCollisionElement {
-	float 							defaultRadius=180;
+	float 							defaultRadius=155;
 
 	int								startFrame;
 	
@@ -28,8 +28,6 @@ class ElementBlob extends MyCollisionElement {
 
 		lorenzElement= new ElementLorenz(that, location,this);
 	}
-///////////////////////////////////////////////////////////
-	void frameCollision() {}
 ///////////////////////////////////////////////////////////
 	
 	void move(PVector newLocation) {

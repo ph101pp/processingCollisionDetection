@@ -1,7 +1,7 @@
 
 class ElementChaos extends MyCollisionElement {
 
-	float 							defaultRadius=50;
+	float 							defaultRadius=25;
 
 	PVector 						ranPoint;
 
@@ -30,7 +30,6 @@ class ElementChaos extends MyCollisionElement {
 	void collide (ElementChaos element, CollisionMap collisionMap, boolean mainCollision) {
 		PVector newVelocity;
 		float distance=PVector.dist(location, element.location);
-		if(distance > actionRadius) return;
 		if(lorenz!=null && !lorenz.allSet) {
 			int index = lorenz.elements.indexOf(this);
 			PVector pointLocation = new PVector(lorenz.points[index][0],lorenz.points[index][1],lorenz.points[index][2]);
@@ -39,7 +38,7 @@ class ElementChaos extends MyCollisionElement {
 			pointLocation.add(lorenz.location);
 			if(PVector.dist(location, pointLocation)<=random(5, 15)) return;
 		}
-		if(distance < actionRadius*0.9) {
+		if(distance < (actionRadius+element.actionRadius)*0.9) {
 			newVelocity= PVector.sub(location,element.location);
 		
 			if(mainCollision) {
@@ -52,7 +51,7 @@ class ElementChaos extends MyCollisionElement {
 			newVelocity= PVector.sub(element.location,location);
 		}
 		newVelocity.normalize();
-		newVelocity.mult(map(distance, 0,actionRadius,pushForce,0));		
+		newVelocity.mult(map(distance, 0,(actionRadius+element.actionRadius),pushForce,0));		
 			
 		velocity.add(newVelocity);
 		
@@ -60,9 +59,7 @@ class ElementChaos extends MyCollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision) {
-		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
-		
-		if(element.moved <=0 || distance>element.actionRadius || that.globalFriction < 0.8) return;
+		if(element.moved <=0 || that.globalFriction < 0.8) return;
 		
 		int pressedFrames = frameCount-element.startFrame;
 
@@ -83,10 +80,6 @@ class ElementChaos extends MyCollisionElement {
 			return;
 		}
 			
-		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
-		
-		if(distance>element.actionRadius) return;
-		
 		PVector newVelocity= PVector.sub(location,element.location);
 		newVelocity.normalize();
 		newVelocity.mult(10);
@@ -186,8 +179,6 @@ class ElementChaos extends MyCollisionElement {
 		friction=1;
 		disturbance--;
 	}
-///////////////////////////////////////////////////////////
-	void frameCollision() {}
 ///////////////////////////////////////////////////////////
 }
 

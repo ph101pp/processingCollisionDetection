@@ -1,7 +1,7 @@
 class ElementLorenz extends MyCollisionElement {
 	ElementBlob						blob;
 
-	float 							defaultRadius=180;
+	float 							defaultRadius=155;
 	int								variableSets=17;
 
 	float							pushForce=5;
@@ -48,15 +48,11 @@ class ElementLorenz extends MyCollisionElement {
 		generatePoints();
 	}
 ///////////////////////////////////////////////////////////
-	void frameCollision() {}
-///////////////////////////////////////////////////////////
 	void collide(ElementChaos element, CollisionMap collisionMap,  boolean mainCollision) {
-		float distance=PVector.dist(new PVector(location.x,location.y),new PVector(element.location.x, element.location.y));
-	
 		if(!allSet) {	
 			PVector thisQuadrant= collisionMap.getQuadrant(element.location);
 			
-			if(distance<=actionRadius && elements.size() < iterations && !thisQuadrant.equals(quadrant)) elements.add(element);
+			if(elements.size() < iterations && !thisQuadrant.equals(quadrant)) elements.add(element);
 				
 			quadrant=thisQuadrant;
 			return;

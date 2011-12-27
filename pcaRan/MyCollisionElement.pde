@@ -5,6 +5,7 @@ class MyCollisionElement extends CollisionElement{
 	void collide(ElementBlob element, CollisionMap collisionMap, boolean mainCollision){};
 /////////////////////////////////////////////////////////
  	void frameCollision(CollisionMap collisionMap) {};
+/////////////////////////////////////////////////////////
  	void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		String type=element.getClass().getName();
 		
