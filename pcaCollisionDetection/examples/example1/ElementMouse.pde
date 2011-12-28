@@ -9,8 +9,6 @@ class ElementMouse extends CollisionElement{
 		elementColor = new Color(0,0,0);
 	}
 ////////////////////////////////////////////////////////////////////////////////
-	public void frameCollision(CollisionMap collisionMap) {};
-////////////////////////////////////////////////////////////////////////////////
 	public void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		ElementCircle thisElement = (ElementCircle) element;
 		colors.add(thisElement.elementColor);

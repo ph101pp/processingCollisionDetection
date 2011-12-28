@@ -11,8 +11,6 @@ class ElementCircle extends CollisionElement{
 		actionRadius= random(5, 20);
 	}
 ////////////////////////////////////////////////////////////////////////////////
-	public void frameCollision(CollisionMap collisionMap) {};
-////////////////////////////////////////////////////////////////////////////////
 	public void collision(CollisionElement element, CollisionMap collisionMap, boolean mainCollision) {
 		if(that.removeElement) remove();
 		else {
