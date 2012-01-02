@@ -38,6 +38,7 @@ void draw(){
 		}
 		else {
 			circle=new ElementCircle(this);
+			while(circle.test(mouse)) circle.location = new PVector (random(width), random(height));
 			circles.add(circle);
 			collisionDetection.add(circle);
 		}

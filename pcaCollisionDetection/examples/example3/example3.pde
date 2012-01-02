@@ -16,7 +16,6 @@ void setup() {
 	size(900,600);
 	noStroke();
 	ellipseMode(CENTER);
-	rectMode(CENTER);
 	RG.init(this);
 
 	gridElements=new ArrayList<CollisionElement>();
