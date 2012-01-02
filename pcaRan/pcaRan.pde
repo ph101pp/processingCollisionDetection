@@ -75,7 +75,7 @@ void setup() {
  	ranShape = RG.loadShape("data/ran.svg");
   	ranShape.centerIn(g, 100, 1, 1);
  	ranShape.scale(map(width*height, 1280*720,1680*1050 ,0.8, 0.5));
- 	ranShape.translate(width/2,height/2);
+ 	ranShape.translate(width/2+20,height/2);
 
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
@@ -123,7 +123,7 @@ void draw() {
 		
 		if(ran!=null)
 			if( k > map(min(abs(frameCount-ran.startFrame),6), 0,6, elementCount, 400) || (!element.test(ran) && PVector.dist(element.location, new PVector(width/2, height/2)) > map(abs(frameCount-ran.startFrame), 0,3, width/2, 50)))
-					continue;
+				if(element.test(ran)) continue;
 
 		collisionDetection.testElement(element);
 		k++;
@@ -135,10 +135,18 @@ void draw() {
 	while(itr2.hasNext()) {
 		elementN= (ElementChaos)itr2.next();
 
-		if(ran!=null && !elementN.test(ran))
-			if(k>400)	
-			continue;
-
+		if(ran!=null)
+			if(!elementN.test(ran) && k>400) {
+				do {
+					ran.moved=1;
+					elementN.testElement(ran);
+					elementN.moveNormal();
+				}
+				while(elementN.test(ran));
+				frame(elementN);
+				continue;
+			}
+			
 		elementN.move();
 		if(elementN.lorenz==null) frame(elementN);
 		elementN.lorenz=null;
@@ -181,9 +189,8 @@ void environment() {
 }
 ///////////////////////////////////////////////////////////
 void frame(ElementChaos element) {
-	ElementChaos thisElement = (ElementChaos) element;
-	
 	float border =  30;
+
 	if(element.location.x < 0-border) {
 		element.location.x*=-1;
 	}
@@ -230,8 +237,8 @@ void keyPressed() {
 		case 10: //Enter
 			ran=ran!=null?
 				null:
-				new ElementBlob(this, new PVector(width/2, height/2), 350);
-				globalFriction=0.9;
+				new ElementBlob(this, new PVector(width/2, height/2), 400);
+				globalFriction=0.81;
 		break;		
 		case 32: //Space
 			if(loop) {
