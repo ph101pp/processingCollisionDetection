@@ -1,6 +1,4 @@
-
 class ElementChaos extends MyCollisionElement {
-
 	float 							defaultRadius=25;
 
 	PVector 						ranPoint;
@@ -13,7 +11,7 @@ class ElementChaos extends MyCollisionElement {
 	
 	ElementLorenz					lorenz=null;
 	
-	ElementChaos 				element1, element2;
+	ElementChaos 					element1, element2;
 	///////////////////////////////////////////////////////////
 	ElementChaos(pcaRan that_, float actionRadius_) {
 		that=that_;
@@ -91,7 +89,7 @@ class ElementChaos extends MyCollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void move() {	
-		if(that.ran) {
+		if(that.ran != null) {
 			moveRan();
 			return;
 		}
@@ -161,9 +159,8 @@ class ElementChaos extends MyCollisionElement {
   		velocity.mult(that.globalFriction);
 		velocity.mult(friction);
 		
-		if(lorenz != null && PVector.dist(location, lorenz.location) > 210) {
+		if(lorenz != null && PVector.dist(location, lorenz.location) > 210) 
 			velocity.mult(-1);
-		}
 		
 		if(that.globalDisturbance > 0 || disturbance>0) {
 			float mult=-0.06;

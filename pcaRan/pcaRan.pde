@@ -46,8 +46,7 @@ boolean								lorenzMovement=false;
 KinectListener      				kinectListener;
 RShape								ranShape;
 
-boolean 							ran=true;
-float								ranStop;
+ElementBlob							ran=null;
 
 boolean								record=false;
 boolean								loop=true;
@@ -81,10 +80,10 @@ void setup() {
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
 		elementN=new ElementChaos(this);
-		
-		while(!ranShape.contains(elementN.location.x,elementN.location.y))
-			elementN.location = new PVector (random(width), random(height),random(depth));
 		elementN.ranPoint=new PVector(elementN.location.x,elementN.location.y,0);
+
+		while(!ranShape.contains(elementN.ranPoint.x,elementN.ranPoint.y))
+			elementN.ranPoint = new PVector (random(width), random(height),random(depth));
 		elements.add(elementN);
 	}
 	collisionDetection = new CollisionDetection(this, elements);
@@ -119,8 +118,13 @@ void draw() {
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
 	int k=0;
-	while(itr.hasNext() && (false || !ran || k<=300)) {
+	while(itr.hasNext()) {
 		element= (CollisionElement)itr.next();
+		
+		if(ran!=null)
+			if( k > map(min(abs(frameCount-ran.startFrame),6), 0,6, elementCount, 400) || (!element.test(ran) && PVector.dist(element.location, new PVector(width/2, height/2)) > map(abs(frameCount-ran.startFrame), 0,3, width/2, 50)))
+					continue;
+
 		collisionDetection.testElement(element);
 		k++;
 	}
@@ -128,10 +132,15 @@ void draw() {
 //	Move!
 	Iterator itr2 = elements.iterator(); 
 	k=0;
-	while(itr2.hasNext() && (true || !ran || k<=1000)) {
+	while(itr2.hasNext()) {
 		elementN= (ElementChaos)itr2.next();
+
+		if(ran!=null && !elementN.test(ran))
+			if(k>400)	
+			continue;
+
 		elementN.move();
-		if(elementN.lorenz==null ) frame(elementN);
+		if(elementN.lorenz==null) frame(elementN);
 		elementN.lorenz=null;
 		k++;
 	}
@@ -164,7 +173,7 @@ void mouseElement() {
 ///////////////////////////////////////////////////////////
 void environment() {
 //	friction
-	if(!ran) {
+	if(ran==null) {
 		if(!movement && (!lorenzMovement || globalFriction > 0.6) && globalFriction > 0.0) globalFriction-=0.005;
 		else if((movement || lorenzMovement) && ((globalFriction <= 0.85 && !lorenzMovement) || globalFriction <= 0.75)) globalFriction+=0.08;
 	}
@@ -219,8 +228,10 @@ void keyPressed() {
 			redraw();
 		break;
 		case 10: //Enter
-			ran=!ran;
-			globalFriction=0.7;
+			ran=ran!=null?
+				null:
+				new ElementBlob(this, new PVector(width/2, height/2), 350);
+				globalFriction=0.9;
 		break;		
 		case 32: //Space
 			if(loop) {

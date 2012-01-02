@@ -41,7 +41,7 @@ class ElementBlob extends MyCollisionElement {
 		
 		if(lorenzElement.allSet == true) resetElementLorenz();
 	
-		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 180)) {
+		if(shapeSet && !lorenzElement.allSet && (moved<=0 || PVector.dist(location, lorenzElement.location) > 20)) {
 			startFrame=frameCount;
 			shapeSet=false;
 			lorenzElement.remove();
