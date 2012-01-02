@@ -64,7 +64,7 @@ class ElementChaos extends MyCollisionElement {
 		PVector newVelocity= PVector.sub(location,element.location);
 		newVelocity.normalize();
 		newVelocity.mult(0.5*pressedFrames);
-		newVelocity.limit(5);
+		newVelocity.limit(pushForce+4);
 		
 		velocity.add(newVelocity);
 		
@@ -82,9 +82,19 @@ class ElementChaos extends MyCollisionElement {
 		newVelocity.normalize();
 		newVelocity.mult(10);
 		
-		velocity.add(newVelocity);
+		if(element.location.y+20 > location.y) {
+			
+			if(element.location.x > location.x)
+				newVelocity.sub(new PVector(10,0));
+			else
+				newVelocity.add(new PVector(10,0));
+			
+			friction=1.5;
+		}
+		else friction=0.4;
+
 		
-		friction=0.7;
+		velocity.add(newVelocity);
 		disturbance=int(random(0,2));
 	}
 ///////////////////////////////////////////////////////////
@@ -173,7 +183,7 @@ class ElementChaos extends MyCollisionElement {
 			location.add(velocity);
 		}
 		
-		friction=1;
+		friction=lerp(friction,1,0.3);
 		disturbance--;
 	}
 ///////////////////////////////////////////////////////////
