@@ -13,4 +13,15 @@ abstract public class CollisionElement {
 		actionRadius=actionRadius_;
 	}
 ////////////////////////////////////////////////////////////////////////////////
+	public boolean test(CollisionElement element) {
+		return this.equals(element) || PVector.dist(element.location, location) > (actionRadius+element.actionRadius) ?
+			false:
+			true;
+	}
+////////////////////////////////////////////////////////////////////////////////
+	public void testElement(CollisionElement element) {
+		if(!test(element)) return;
+		element.collision(this, null, true);
+		collision(element, null,false);
+	}
 }
