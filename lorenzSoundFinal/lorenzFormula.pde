@@ -1,12 +1,9 @@
 class LorenzFormula {
 
-	lorenzSoundFour		that;
+	lorenzSoundFinal 		that;
 	
-	boolean 			paused=true;
-
 	int 				animate=5,
-						direction=1,
-						iteration=1000;
+						direction=1;
 	
 	float 				animationStep=0.001,
 						x,y,z;
@@ -30,20 +27,9 @@ class LorenzFormula {
 							{0.01, 0.13, 0.13}
 						};
 						
-	float[][]			targetAreas = {
-							{75,-5},
-							{390,-5},
-							{515,-5},
-							{655,-5},
-							{190,27},
-							{395,27},
-							{535,27},
-							{110,59},
-							{400,59}
-						};
 						
 ///////////////////////////////////////////////////////////
-	LorenzFormula(lorenzSoundFour that_) {
+	LorenzFormula(lorenzSoundFinal that_) {
 		that=that_;
 	}
 ///////////////////////////////////////////////////////////
@@ -65,18 +51,20 @@ class LorenzFormula {
 		
 	}
 ///////////////////////////////////////////////////////////
-	void generatePoints(){
+	float[][] generatePoints(int iterations){
+		float[][] points=new float[iterations][3];
 		x=1;
 		y=1;
 		z=1;
 		
 		for(int i=0; i<50; i++) iterate();
-		for(int i=0; i<that.points.length; i++) {
-			that.points[i][0]=x;
-			that.points[i][1]=y;
-			that.points[i][2]=z;			
+		for(int i=0; i<iterations; i++) {
+			points[i][0]=x;
+			points[i][1]=y;
+			points[i][2]=z;			
 			iterate();	
 		}
+		return points;
 	}
 ///////////////////////////////////////////////////////////
 	void iterate(){
