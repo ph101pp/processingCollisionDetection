@@ -1,0 +1,28 @@
+variable 0: 
+-1.1750002
+variable 1: 
+1.12
+variable 2: 
+4.49
+variable 3: 
+0.13
+variable 4: 
+1.4
+variable 5: 
+-0.11362505
+variable 6: 
+0.11913875
+variable 7: 
+1.47
+variable 8: 
+0.13
+iterations: 
+3575.6423
+zoom: 
+100.0
+rotateX: 
+-1.7999187
+rotateY: 
+1542.242
+rotateZ: 
+0.0
