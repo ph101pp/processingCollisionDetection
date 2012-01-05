@@ -101,7 +101,7 @@ void draw() {
 		element= (CollisionElement)itr.next();
 		
 		if(ran!=null)
-			if( k > map(min(abs(frameCount-ran.startFrame),6), 0,6, elementCount, 400) || (!element.test(ran) && PVector.dist(element.location, new PVector(width/2, height/2)) > map(abs(frameCount-ran.startFrame), 0,3, width/2, 50)))
+			if( k > map(min(abs(frameCount-ran.startFrame),6), 0,6, elementCount, 400))
 				if(element.test(ran)) continue;
 
 		collisionDetection.testElement(element);
@@ -115,7 +115,8 @@ void draw() {
 		elementN= (ElementChaos)itr2.next();
 
 		if(ran!=null)
-			if(!elementN.test(ran) && k>400) {
+			if((!elementN.test(ran) || PVector.dist(elementN.location, elementN.ranPoint) <= 5) && k>400) {
+		//	if(elementN.test(ran) && k>400) {
 				do {
 					ran.moved=1;
 					elementN.testElement(ran);
