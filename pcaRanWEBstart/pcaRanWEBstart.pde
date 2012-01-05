@@ -1,13 +1,11 @@
 import geomerative.*;
-import pcaCollisionDetection.*;
-
 ///////////////////////////////////////////////////////////
 pcaRanWEBstart								that;
 
 ///////////
 //int 								elementCount = 6000;
 //int 								depth = 10;
-int 								elementCount = 3000;
+int 								elementCount = 2000;
 int 								depth = 1;
 //int 								elementCount = 5500;
 //int 								depth = 5;
@@ -37,6 +35,10 @@ ElementBlob							ran;
 
 boolean								record=false;
 boolean								loop=true;
+
+
+		Data data= new Data();
+
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
@@ -44,7 +46,7 @@ void setup() {
 //	size(1280,720,P3D);
 	background(255);
 	stroke(0);
-	frameRate(10);
+//	frameRate(10);
 	noFill();
 	ran=new ElementBlob(this, new PVector(width/2, height/2), 300);
 	elementCount=int(map(width*height, 0,1680*1050 ,0, elementCount));
@@ -59,6 +61,9 @@ void setup() {
  	ranShape.scale(0.4);
  	ranShape.translate(width/2,height/2);
 
+		
+		data.beginSave();
+
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
 		elementN=new ElementChaos(this);
@@ -67,12 +72,23 @@ void setup() {
 		while(!ranShape.contains(elementN.ranPoint.x,elementN.ranPoint.y))
 			elementN.ranPoint = new PVector (random(width), random(height),random(depth));
 		elements.add(elementN);
+		
+		
+		data.add(elementN.ranPoint.x);
+		data.add(elementN.ranPoint.y);
+		data.add("-----------------");
+
 	}
 	collisionDetection = new CollisionDetection(this, elements);
+			
 	
 }
 ///////////////////////////////////////////////////////////
 void draw() {
+		data.endSave(
+				sketchPath(java.io.File.separator+"ranPoints.txt")
+		);
+		noLoop();
 	println(frameRate);
 	translate(0,0,depth);
 	background(255);
