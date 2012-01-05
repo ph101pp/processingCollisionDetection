@@ -105,7 +105,7 @@ class KinectListener extends XnVPointControl
     println("OnPointDestroy, handId: " + nID);
     
 		that.mouseElement.finalize();
-		collisionDetection.elements.remove(that.mouseElement);
+		collisionDetection.remove(that.mouseElement);
 		that.mouseElement = null;
 
   }
