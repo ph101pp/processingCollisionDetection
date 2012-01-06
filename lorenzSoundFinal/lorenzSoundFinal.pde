@@ -74,8 +74,8 @@ void drawLorenzSoundFour(float[][] points) {
 	
 		i++;
 	}
-	drawShape(points, new PVector(width/4, height/2));
-	drawLine(points, new PVector(width/4-250,height/2+300));
+	drawShape(points, new PVector(35-180+3*width/4,  30+height/2));
+	drawLine(points, new PVector(35+100+3*width/4, 200+height/2));
 }
 ///////////////////////////////////////////////////////////
 void drawLorenzSoundThree (float[][] points) {
@@ -118,14 +118,14 @@ void drawLorenzSoundThree (float[][] points) {
 		i++;
 	
 	}
-	drawShape(points, new PVector(3*width/4, height/2));
-	drawLine(points, new PVector(3*width/4-250,height/2-300));
+	drawShape(points, new PVector(35+190+width/4, 30+height/2));
+	drawLine(points, new PVector(35-170+width/4, 200+height/2));
 }
 ///////////////////////////////////////////////////////////
 void drawLine(float[][] points, PVector position) {
 
 	for(int k=0; true && k<iteration; k++) {	
-		points[k][0]+=map(k, 0,1000,0,500/20);
+		points[k][1]-=map(k, 0,1000,0,400/20);
 	}
 	
 	pushMatrix();
@@ -153,7 +153,7 @@ void drawShape(float[][] points, PVector position) {
 	pushMatrix();
 		translate(position.x-averX*zoom, position.y-averY*zoom);
 	//	rotateY(rotationY);
-		rotateY(90);
+//		rotateY(90);
 		fill(255,0,0);
 	//	box(10);
 		noFill();
