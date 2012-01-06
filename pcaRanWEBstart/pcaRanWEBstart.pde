@@ -36,9 +36,6 @@ ElementBlob							ran;
 boolean								record=false;
 boolean								loop=true;
 
-
-		Data data= new Data();
-
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
@@ -61,9 +58,6 @@ void setup() {
  	ranShape.scale(0.4);
  	ranShape.translate(width/2,height/2);
 
-		
-		data.beginSave();
-
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
 		elementN=new ElementChaos(this);
@@ -72,12 +66,6 @@ void setup() {
 		while(!ranShape.contains(elementN.ranPoint.x,elementN.ranPoint.y))
 			elementN.ranPoint = new PVector (random(width), random(height),random(depth));
 		elements.add(elementN);
-		
-		
-		data.add(elementN.ranPoint.x);
-		data.add(elementN.ranPoint.y);
-		data.add("-----------------");
-
 	}
 	collisionDetection = new CollisionDetection(this, elements);
 			
@@ -85,10 +73,6 @@ void setup() {
 }
 ///////////////////////////////////////////////////////////
 void draw() {
-		data.endSave(
-				sketchPath(java.io.File.separator+"ranPoints.txt")
-		);
-		noLoop();
 	println(frameRate);
 	translate(0,0,depth);
 	background(255);
