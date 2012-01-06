@@ -8,12 +8,10 @@ public class CollisionDetection {
 ////////////////////////////////////////////////////////////////////////////////
 	public CollisionDetection(PApplet that_) {
 		that=that_;
-    	that.registerPre(this);
 	}
 	public CollisionDetection(PApplet that_, ArrayList<CollisionElement> elements_) {
 		that=that_;
 		elements=(ArrayList<CollisionElement>) elements_.clone(); 
-	   	that.registerPre(this);
 	}
 ////////////////////////////////////////////////////////////////////////////////
 	public void pre() {

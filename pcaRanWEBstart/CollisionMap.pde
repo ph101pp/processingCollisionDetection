@@ -16,6 +16,11 @@ public class CollisionMap{
 		columns=(int) Math.ceil(that.width/gridSize)+2;
 		rows=(int) Math.ceil(that.height/gridSize)+2;
     	quadrants= (ArrayList<CollisionElement>[][]) new ArrayList[columns][rows]; 
+    	
+    	for(i=(int) 0; i<columns; i++) 
+			for(k= 0; k<rows; k++) 
+				quadrants[i][k] = new ArrayList();
+
 	}
 ////////////////////////////////////////////////////////////////////////////////
 	public void add(CollisionElement element) {	
@@ -23,7 +28,6 @@ public class CollisionMap{
 		x= (int) quadrant.x;
 		y= (int) quadrant.y;
 		
-		if(quadrants[x][y] == null) quadrants[x][y] = new ArrayList();
 		quadrants[x][y].add(element);
 	}
 ////////////////////////////////////////////////////////////////////////////////

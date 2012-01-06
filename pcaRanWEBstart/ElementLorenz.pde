@@ -34,7 +34,6 @@ class ElementLorenz extends MyCollisionElement {
 		location = location_;
 		startFrame=frameCount;
 		
-		getVariableSet();
 		generatePoints();
 	}
 	ElementLorenz(pcaRanWEBstart that_, PVector location_, ElementBlob blob_) {
@@ -44,7 +43,6 @@ class ElementLorenz extends MyCollisionElement {
 		location = location_;
 		startFrame=frameCount;
 
-		getVariableSet();
 		generatePoints();
 	}
 ///////////////////////////////////////////////////////////
@@ -109,32 +107,6 @@ class ElementLorenz extends MyCollisionElement {
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
-	void getVariableSet () {
-		String filenumber = nf(int(random(0, variableSets)),5,0);
-		String filename = sketchPath("variableSets"+java.io.File.separator+filenumber+"_lorenzVariableSet.txt");
-		String[] data=loadStrings(filename);
-		
-		if(data==null) return;
-
-		int id=0;
-		int k=0;
-		for(int i=0; 18 >i; i++) {
-			if(i%2==0) {
-				id++;
-				continue;
-			}
-			variable[k]=float(data[id]);
-			k++;
-			id++;
-		}
-		
-		id++; //obj.iteration=data.readFloat();
-		id+=2; //obj.zoom=data.readFloat();
-		id+=2; //obj.rotation[0]=data.readFloat();
-		id+=2; //obj.rotation[1]=data.readFloat();
-		id+=2; //obj.rotation[2]=data.readFloat();
-	}
-///////////////////////////////////////////////////////////
 	void generatePoints(){
 		points = new float[iterations][3];
 		x=1;
@@ -168,12 +140,12 @@ class ElementLorenz extends MyCollisionElement {
 		pushMatrix();
 			stroke(0);
 			
-			translate(location.x, location.y,location.z);
+			translate(location.x, location.y);
 			rotation+=0.05;
 			rotateY(rotation);
 //			box(10);
 			pushMatrix();			
-				translate(-average.x, -average.y,-average.z);
+				translate(-average.x, -average.y);
 //				box(10);
 				beginShape();
 					for(int i=0; i< points.length; i++) {
@@ -181,7 +153,7 @@ class ElementLorenz extends MyCollisionElement {
 						y =points[i][1];
 						z =points[i][2];
 		
-						curveVertex(x*zoom,y*zoom,z*zoom);
+						curveVertex(x*zoom,y*zoom);
 					}
 				endShape();
 			popMatrix();

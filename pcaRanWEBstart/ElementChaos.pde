@@ -42,7 +42,7 @@ class ElementChaos extends MyCollisionElement {
 			if(mainCollision) {
 				float lineZ= abs((location.z-element.location.z)/2);
 				stroke(map(lineZ,0,30,0,100 ));
-				line(location.x,location.y,location.z,element.location.x,element.location.y,element.location.z);
+				line(location.x,location.y,element.location.x,element.location.y);
 			}			
 		}
 		else {
@@ -73,10 +73,6 @@ class ElementChaos extends MyCollisionElement {
 	}
 ///////////////////////////////////////////////////////////
 	void collide(ElementLorenz element, CollisionMap collisionMap, boolean mainCollision) {
-		if(!element.allSet) {
-			if(element.elements.contains(this)) lorenz= element;	
-			return;
-		}
 			
 		PVector newVelocity= PVector.sub(location,element.location);
 		newVelocity.normalize();
@@ -103,13 +99,6 @@ class ElementChaos extends MyCollisionElement {
 			moveRan();
 			return;
 		}
-		if(lorenz !=null) {
-  			int index = lorenz.elements.indexOf(this);
-			if(!lorenz.allSet && index<=lorenz.count) {
-				moveLorenz(index);
-				return;
-			}
-		}
 		moveNormal();
 	}
 ///////////////////////////////////////////////////////////
@@ -130,7 +119,7 @@ class ElementChaos extends MyCollisionElement {
 				
 				element1 =(ElementChaos) lorenz.elements.get(index+1);
 				element2 =(ElementChaos) lorenz.elements.get(index+2);
-				line(element.location.x, element.location.y, element.location.z, location.x,location.y,location.z);
+				line(element.location.x, element.location.y, location.x,location.y);
 //				curve( element.location.x, element.location.y, element.location.z,location.x,location.y,location.z, element1.location.x, element1.location.y, element1.location.z, element2.location.x, element2.location.y, element2.location.z);
 			}
 		}
@@ -148,43 +137,27 @@ class ElementChaos extends MyCollisionElement {
 	void moveRan() {
 		PVector oldLocation = location;
 		
-		boolean contained=that.ranShape.contains(location.x,location.y);
+		boolean contained=PVector.dist(ranPoint, location)<=1;
 		
 		if(!contained) {
 			velocity= PVector.sub(ranPoint, location);
-			velocity.mult(0.3);
+			velocity.mult(random(0.2,0.7));
 		}
-		else velocity.mult(0.3);
+		else velocity.mult(random(0.2,0.7));
 		
 		location.add(velocity);
-		
-		if(false && !that.ranShape.contains(location.x,location.y)) {
-			RPoint[] points=that.ranShape.getIntersections(RShape.createLine(location.x,location.y,oldLocation.x,oldLocation.y));
-			location=new PVector(points[0].x, points[0].y,0);
-		}
 		
 	}
 ///////////////////////////////////////////////////////////
 	void moveNormal() {
-  		velocity.mult(that.globalFriction);
+ 		velocity.mult(0.8);
 		velocity.mult(friction);
 		
-		if(lorenz != null && PVector.dist(location, lorenz.location) > 210) 
-			velocity.mult(-1);
-		
-		if(that.globalDisturbance > 0 || disturbance>0) {
-			float mult=-0.06;
-			velocity.mult(mult);
 			location.add(velocity);
-			velocity.mult(1/mult);
-			
-		}
-		else {
-			location.add(velocity);
-		}
 		
 		friction=lerp(friction,1,0.3);
 		disturbance--;
+		
 	}
 ///////////////////////////////////////////////////////////
 }

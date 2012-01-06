@@ -1,4 +1,3 @@
-import geomerative.*;
 ///////////////////////////////////////////////////////////
 pcaRanWEBstart								that;
 
@@ -29,55 +28,44 @@ float								mouseMoved;
 boolean								movement=false;
 boolean								lorenzMovement=false;
 
-RShape								ranShape;
-
 ElementBlob							ran;
 
 boolean								record=false;
 boolean								loop=true;
 
+
+Data data= new Data();
+
 ///////////////////////////////////////////////////////////
 void setup() {
 	that = this;
-	size(1680,1050,P3D);
+	size(1680,1050);
 //	size(1280,720,P3D);
 	background(255);
 	stroke(0);
-//	frameRate(10);
 	noFill();
 	ran=new ElementBlob(this, new PVector(width/2, height/2), 300);
 	elementCount=int(map(width*height, 0,1680*1050 ,0, elementCount));
 	depth=int(map(width*height, 0,1680*1050 ,0, depth));
 	
-
-	RG.init(this);
- 	RG.ignoreStyles(false);
- 	RG.setPolygonizer(RG.ADAPTATIVE);
- 	ranShape = RG.loadShape("data/ran.svg");
-  	ranShape.centerIn(g, 100, 1, 1);
- 	ranShape.scale(0.4);
- 	ranShape.translate(width/2,height/2);
-
+	data.load("ranPoints.txt");
 //	Create Elements
 	for (int i=0; i<elementCount; i++) {
 		elementN=new ElementChaos(this);
-		elementN.ranPoint=new PVector(elementN.location.x,elementN.location.y,0);
-
-		while(!ranShape.contains(elementN.ranPoint.x,elementN.ranPoint.y))
-			elementN.ranPoint = new PVector (random(width), random(height),random(depth));
+		elementN.ranPoint=new PVector(data.readFloat(),data.readFloat(),0);
+		
+		data.readString();
 		elements.add(elementN);
 	}
 	collisionDetection = new CollisionDetection(this, elements);
-			
-	
 }
 ///////////////////////////////////////////////////////////
 void draw() {
-	println(frameRate);
-	translate(0,0,depth);
+//	println(frameRate);
+	translate(0,0);
 	background(255);
 // 	ranShape.draw();
-	
+	collisionDetection.remapElements();	
 //	Collide the shit out of it.
 	Iterator itr = elements.iterator(); 
 	int k=0;
@@ -88,10 +76,9 @@ void draw() {
 			if( k > map(min(abs(frameCount-ran.startFrame),6), 0,6, elementCount, 1000))
 				if(element.test(ran)) continue;
 
-		collisionDetection.testElement(element);
+		if(element != null) collisionDetection.testElement(element);
 		k++;
 	}
-
 //	Move!
 	Iterator itr2 = elements.iterator(); 
 	k=0;
@@ -112,8 +99,6 @@ void draw() {
 			}
 			
 		elementN.move();
-		if(elementN.lorenz==null) frame(elementN);
-		elementN.lorenz=null;
 		k++;
 	}
 }
