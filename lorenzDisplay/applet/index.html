@@ -44,9 +44,9 @@
 
 	  var attributes = { 
             code: 'lorenzDisplay.class',
-            archive: 'lorenzDisplay.jar',
-            width: 900, 
-            height: 1000,
+            archive: 'lorenzDisplay.jar,fullscreen.jar,core.jar',
+            width: 1680, 
+            height: 1050,
           };
           var parameters = { 
             image: 'loading.gif',
@@ -62,11 +62,11 @@
 	  <!--[if !IE]> -->
 	  <object classid="java:lorenzDisplay.class" 
             	  type="application/x-java-applet"
-            	  archive="lorenzDisplay.jar"
-            	  width="900" height="1000"
+            	  archive="lorenzDisplay.jar,fullscreen.jar,core.jar"
+            	  width="1680" height="1050"
             	  standby="Loading Processing software..." >
             
-	    <param name="archive" value="lorenzDisplay.jar" />
+	    <param name="archive" value="lorenzDisplay.jar,fullscreen.jar,core.jar" />
 	    
 	    <param name="mayscript" value="true" />
 	    <param name="scriptable" value="true" />
@@ -82,11 +82,11 @@
 		 http://java.sun.com/javase/6/webnotes/install/jre/autodownload.html -->
 	    <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
 		    codebase="http://java.sun.com/update/1.6.0/jinstall-6u20-windows-i586.cab"
-		    width="900" height="1000"
+		    width="1680" height="1050"
 		    standby="Loading Processing software..."  >
 	      
 	      <param name="code" value="lorenzDisplay" />
-	      <param name="archive" value="lorenzDisplay.jar" />
+	      <param name="archive" value="lorenzDisplay.jar,fullscreen.jar,core.jar" />
 	      
 	      <param name="mayscript" value="true" />
 	      <param name="scriptable" value="true" />
@@ -120,7 +120,7 @@
       </p>
       
       <p>
-	Source code: <a href="lorenzDisplay.pde">lorenzDisplay</a> <a href="lorenzFormula.pde">lorenzFormula</a> <a href="lorenzVisual.pde">lorenzVisual</a> 
+	Source code: <a href="lorenzDisplay.pde">lorenzDisplay</a> <a href="PointList.pde">PointList</a> <a href="eventListener.pde">eventListener</a> <a href="lorenzFormula.pde">lorenzFormula</a> <a href="lorenzVisual.pde">lorenzVisual</a> 
       </p>
       
       <p>

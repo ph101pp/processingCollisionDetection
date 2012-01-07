@@ -1,10 +1,3 @@
-/*import org.openkinect.*;
-import org.openkinect.processing.*;
-import hypermedia.video.*;
-import processing.video.*;
-import java.awt.*;
-import damkjer.ocd.*;
-*/
 import fullscreen.*;
 import japplemenubar.*;
 import SimpleOpenNI.*;
@@ -24,8 +17,13 @@ int 								depth = 10;
 //int 								elementCount = 5500;
 //int 								depth = 5;
 float								globalFriction=0.8;
+
+/*//////////
+Set this to true if you want to use a Microsoft Kinect Camera with this Sketch! 
+/*//////////
 boolean								kinect = false;
-///////////
+////////////
+////////////
 
 ArrayList<CollisionElement> 		elements = new ArrayList();
 ArrayList<ElementLorenz> 			lorenzElements = new ArrayList();

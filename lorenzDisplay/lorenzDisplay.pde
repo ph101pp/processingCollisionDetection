@@ -1,6 +1,5 @@
 import fullscreen.*;
 import japplemenubar.*;
-import processing.opengl.*;
 
 LorenzFormula lorenzFormula;
 LorenzVisual lorenzVisual;
@@ -27,6 +26,7 @@ void setup(){
 	background(blueLight);
 
 	fullScreen = new FullScreen(this); 
+	fullScreen.setShortcutsEnabled(true);
 	lorenzFormula = new LorenzFormula();
 	lorenzVisual = new LorenzVisual(lorenzFormula);
 	pointList = new PointList(lorenzFormula, lorenzVisual);
@@ -35,7 +35,7 @@ void setup(){
 
 
 	
-	fullScreen.enter(); 
+	//fullScreen.enter(); 
 
 
 }

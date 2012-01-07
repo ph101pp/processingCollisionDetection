@@ -1,11 +1,14 @@
 class LorenzVisual {
 	LorenzFormula 	lorenzFormula;
-	float			zoom=100,
+	float			zoom=85,
 					speed=0.05,
 					xmag, ymag, newXmag, newYmag, diff, rotationX, rotationY, rotationZ;
 	int 			rotationTimer;
 	
-	float[]			rotation= new float[3];
+	float[]			rotation= {0,90,0},
+					matrix = new float[3],
+					position = {1020,510};
+					
 	
 	LorenzVisual(LorenzFormula lorenzFormula_) {
 		lorenzFormula=lorenzFormula_;
@@ -17,7 +20,7 @@ class LorenzVisual {
 		newXmag = mouseX/float(width) * TWO_PI;
 		newYmag = mouseY/float(height) * TWO_PI;
 	
-		if(mousePressed && mouseY > height/2) {
+		if(mousePressed && mouseY > 200 && mouseX > 400) {
 			rotationTimer = millis();
 			
 			diff = xmag-newXmag;
@@ -65,6 +68,23 @@ class LorenzVisual {
 						y =lorenzFormula.points[i][1],
 						z =lorenzFormula.points[i][2];
 			
+				float[] boxShades= {1, 20, 50, 100};
+				
+/*				
+				pushMatrix();
+					noStroke();
+					translate(x*zoom,y*zoom,z*zoom);
+				
+					for(int k=0; k<boxShades.length; k++) {
+						if(k==0) fill(255,255,255,255);
+						else fill(255,255,255,10/(k*k));
+						box(boxShades[k]);
+
+					}
+				popMatrix();
+*/
+
+
 					curveVertex(x*zoom,y*zoom,z*zoom);
 			}
 		endShape();
@@ -75,12 +95,26 @@ class LorenzVisual {
 	void draw (){
 		rotation();
 		pushMatrix();
-			translate(width/2-30, 100+height/2);
-			stroke(255);
+			translate(position[0], position[1]);
+
+			stroke(39,46,49);
+			
+/*			line(0,0,0,100,0,0);
+			line(0,0,0,0,-100,0);
+			line(0,0,0,0,0,100);
+*/
+//			rect(0,0,0,1,1,1);
+
+			stroke(255,255,255,200);
 			noFill();
 			rotateX(radians(rotation[0]));
 			rotateY(radians(rotation[1]));
 			rotateZ(radians(rotation[2]));
+
+			matrix[0] = modelX(0,0,0);
+			matrix[1] = modelY(0,0,0);
+			matrix[2] = modelZ(0,0,0);
+	
 
 			generateShape();
 		popMatrix();
