@@ -1,8 +1,8 @@
 class ElementChaos extends CollisionElement {
-
 	example4						that;
 	float 							defaultRadius=25;
 	float							pushForce=5;
+	PVector							velocity = new PVector(0,0,0);
 	PVector							newVelocity;
 ///////////////////////////////////////////////////////////
 	ElementChaos(example4 that_, float actionRadius_) {
